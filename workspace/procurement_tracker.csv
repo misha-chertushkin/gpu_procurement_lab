@@ -1,7 +1,7 @@
 timestamp,source,quantity,status,notes
-Inventory Agent,300,Quarantined,"Location 55; STATUS_FLAG_9 = 9"
+inventory,300,quarantined,in hold location 55
 
-Legal Agent,300,Pending Validation,"Exclusivity Clause (Section 4) breach, Exception under Clause 7.B if NVIDIA delivery is >60 days late."
+legal,300,conditionally cleared,contingent on NVIDIA delivery delay
 
-Logistics Agent,250,Available,"Spot market price: $32,000/unit"
+logistics,250,available,"FastChips_Reseller_LLC at $32,000/unit"
 

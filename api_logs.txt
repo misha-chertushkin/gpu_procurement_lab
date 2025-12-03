@@ -1,16 +1,9 @@
-INFO:     Started server process [802283]
+INFO:     Started server process [991977]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
+INFO:     127.0.0.1:55116 - "GET /v1/market/spot?chip=H100 HTTP/1.1" 200 OK
 INFO:     Shutting down
-INFO:     Finished server process [802283]
-ERROR:    Traceback (most recent call last):
-  File "/home/chertushkin/miniconda3/envs/l400-env/lib/python3.12/site-packages/starlette/routing.py", line 701, in lifespan
-    await receive()
-  File "/home/chertushkin/miniconda3/envs/l400-env/lib/python3.12/site-packages/uvicorn/lifespan/on.py", line 137, in receive
-    return await self.receive_queue.get()
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/chertushkin/miniconda3/envs/l400-env/lib/python3.12/asyncio/queues.py", line 158, in get
-    await getter
-asyncio.exceptions.CancelledError
-
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [991977]

@@ -70,7 +70,7 @@ def setup_gcs():
         bucket = client.bucket(bucket_name)
         if not bucket.exists():
             print(f"🪣 Creating bucket {bucket_name}...")
-            bucket = client.create_bucket(bucket_name, location=config.REGION)
+            bucket = client.create_bucket(bucket_name, location='US')
             print(f"✅ Bucket {bucket_name} created.")
         else:
             print(f"✅ Bucket {bucket_name} already exists.")
