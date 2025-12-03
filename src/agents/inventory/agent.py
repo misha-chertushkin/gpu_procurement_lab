@@ -5,7 +5,6 @@ from utils.config import config  # <--- Ensure config is imported
 # Initialize tools instance
 db_tools = DatabaseTools()
 
-# --- THE FIX: Inject specific ID strings into the prompt ---
 INVENTORY_SYSTEM_PROMPT = f"""
 You are the Inventory Investigator Agent.
 Your goal is to find hidden stock in the '{config.TABLE_INVENTORY}' database.
