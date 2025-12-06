@@ -203,6 +203,22 @@ endif
 	@bash -c ". scripts/base_env.sh && labs/phase$(phase)/venv/bin/python -m pytest -W "ignore::DeprecationWarning" labs/phase$(phase)/tests --junitxml=.labs/phase$(phase)/build/test-results.xml"
 
 
+
+# Run a command in each lab
+.PHONY: batch-tests
+batch-tests:
+ifndef test_count
+	$(error test_count is not set! e.g., make batch-tests test_count=1)
+endif
+	@for lab in labs/*; do \
+		if [ -d "$$lab" ]; then \
+			echo "🔍 Executing Unit Tests for $$lab"; \
+			make -C $$lab install; \
+			bash -c ". scripts/base_env.sh && TEST_COUNT=$(test_count) $$lab/venv/bin/python -m pytest -W 'ignore::DeprecationWarning' $$lab/tests --junitxml=$$lab/build/test-results.xml"; \
+		fi \
+	done
+
+
 # Help
 .PHONY: help
 help:

@@ -112,7 +112,7 @@ async def call_agent_async(prompt: str|Content):
 
 
 # Run parameterized tests N times
-N = 1
+N = int(os.getenv("TEST_COUNT", 1))
 @pytest.mark.parametrize(
     "run_number",
     range(N),
