@@ -87,12 +87,6 @@ update-branch:
 	git remote update origin --prune
 
 
-# Clean Terraform Environment
-.PHONY: clean
-clean:
-	rm -rf infra/.terraform infra/.terraform.lock.hcl infra/.terraform.initialized infra/.terraform.deployed ${BUILD} ${VENV_TIMESTAMP} ${INSTALL_TIMESTAMP}
-
-
 # Initialize Terraform
 $(INIT_TIMESTAMP): infra/*.tf
 	terraform -chdir=infra init
@@ -151,25 +145,25 @@ $(HYDRATE_TIMESTAMP): $(DEPLOY_TIMESTAMP) $(INSTALL_TIMESTAMP) $(ASSETS_FILES)
 
 
 # Create virtual environment
-${VENV_TIMESTAMP}:
+$(VENV_TIMESTAMP):
 	@echo "🐍 Creating Python virtual environment in $(VENV)..."
 	python3 -m venv $(VENV)
 	mkdir -p ${BUILD}
 	${PIP} install --upgrade pip
-	touch ${VENV_TIMESTAMP}
+	touch $(VENV_TIMESTAMP)
 
 .PHONY: venv
-venv: ${VENV_TIMESTAMP}
+venv: $(VENV_TIMESTAMP)
 
 
 # Install dependencies
-${INSTALL_TIMESTAMP}: ${VENV_TIMESTAMP} pyproject.toml
+$(INSTALL_TIMESTAMP): $(VENV_TIMESTAMP) pyproject.toml
 	@echo "🐍 Upgrading Python Dependencies in $(VENV)..."
 	${PIP} install -e .
-	touch ${INSTALL_TIMESTAMP}
+	touch $(INSTALL_TIMESTAMP)
 
 .PHONY: install
-install: ${INSTALL_TIMESTAMP}
+install: $(INSTALL_TIMESTAMP)
 
 
 # Run a phase demo
@@ -203,7 +197,6 @@ endif
 	@bash -c ". scripts/base_env.sh && labs/phase$(phase)/venv/bin/python -m pytest -v -s --log-cli-level=INFO -W "ignore::DeprecationWarning" labs/phase$(phase)/tests --junitxml=.labs/phase$(phase)/build/test-results.xml"
 
 
-
 # Run a command in each lab
 .PHONY: batch-tests
 batch-tests:
@@ -217,6 +210,26 @@ endif
 			bash -c ". scripts/base_env.sh && TEST_COUNT=$(test_count) $$lab/venv/bin/python -m pytest -v -s --log-cli-level=INFO -W 'ignore::DeprecationWarning' $$lab/tests --junitxml=$$lab/build/test-results.xml | tee $$lab/build/test-results.log"; \
 		fi \
 	done
+
+
+# Clean the Environment
+.PHONY: clean
+clean:
+ifndef phase
+	@echo "🗑️  Executing Clean for ALL Phases"
+	rm -rf $(VENV) $(BUILD)
+	find . -type d -name "build" -exec rm -rf {} +
+#	find . -type d -name ".terraform" -exec rm -rf {} +
+#	find . -name ".terraform.*" -exec rm -f {} +
+	find . -name "terraform.tfstate*" -exec rm -f {} +
+	find . -type d -name "__pycache__" -exec rm -rf {} +
+	find . -type d -name ".pytest_cache" -exec rm -rf {} +
+	find . -type d -name ".ruff_cache" -exec rm -rf {} +
+	find . -type d -name "*.egg-info" -exec rm -rf {} +
+	find . -name ".coverage" -exec rm -f {} +
+endif
+	@echo "🗑️  Executing Clean for Phase $(phase)"
+	make -C labs/phase$(phase) clean
 
 
 # Help
