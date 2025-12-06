@@ -46,7 +46,7 @@ all: help
 
 # Create virtual environment
 ${VENV_TIMESTAMP}:
-	echo "🐍 Creating Python virtual environment in $(VENV)..."
+	@echo "🐍 Creating Python virtual environment for Phase..."
 	python3 -m venv $(VENV)
 	mkdir -p ${BUILD}
 	${PIP} install --upgrade pip

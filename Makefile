@@ -152,7 +152,7 @@ $(HYDRATE_TIMESTAMP): $(DEPLOY_TIMESTAMP) $(INSTALL_TIMESTAMP) $(ASSETS_FILES)
 
 # Create virtual environment
 ${VENV_TIMESTAMP}:
-	echo "🐍 Creating Python virtual environment in $(VENV)..."
+	@echo "🐍 Creating Python virtual environment in $(VENV)..."
 	python3 -m venv $(VENV)
 	mkdir -p ${BUILD}
 	${PIP} install --upgrade pip
@@ -164,6 +164,7 @@ venv: ${VENV_TIMESTAMP}
 
 # Install dependencies
 ${INSTALL_TIMESTAMP}: ${VENV_TIMESTAMP} pyproject.toml
+	@echo "🐍 Upgrading Python Dependencies in $(VENV)..."
 	${PIP} install -e .
 	touch ${INSTALL_TIMESTAMP}
 
@@ -177,6 +178,7 @@ run: hydrate
 ifndef phase
 	$(error phase is not set! e.g., make run phase=1)
 endif
+	@echo "🚀 Starting Local Test Agent for Phase $(phase)"
 	make -C labs/phase$(phase) install
 	scripts/run_phase.sh $(phase)
 
@@ -186,8 +188,19 @@ test: hydrate
 ifndef phase
 	$(error phase is not set! e.g., make test phase=1)
 endif
+	@echo "🔍 Executing Manual Test Run for Phase $(phase)"
 	make -C labs/phase$(phase) install
 	scripts/test_phase.sh $(phase)
+
+
+.PHONY: tests
+tests: hydrate
+ifndef phase
+	$(error phase is not set! e.g., make test phase=1)
+endif
+	@echo "🔍 Executing Unit Tests for Phase $(phase)"
+	make -C labs/phase$(phase) install
+	@bash -c ". scripts/base_env.sh && labs/phase$(phase)/venv/bin/python -m pytest -W "ignore::DeprecationWarning" labs/phase$(phase)/tests --junitxml=.labs/phase$(phase)/build/test-results.xml"
 
 
 # Help

@@ -1,0 +1,137 @@
+# Copyright 2025 Google LLC
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     https://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import os
+import pytest
+
+import asyncio
+import logging
+
+from dotenv import load_dotenv
+import google.auth
+from google import genai
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+from google.genai.types import Content, Part
+
+from agents.commander.agent import root_agent
+
+# Configure Logging
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("google_adk").setLevel(logging.DEBUG)
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
+
+load_dotenv()
+
+
+parameterized_test_data = [
+    (
+        "Can you please find me 100 H100 GPUs?"
+    ),
+]
+
+
+PROJECT_ID = os.getenv("PROJECT_ID", "unset")
+LOCATION = os.getenv("LOCATION", "us-central1")
+MAX_STEPS = int(os.getenv("MAX_STEPS", 30))
+
+os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "1"
+os.environ["GOOGLE_CLOUD_PROJECT"] = PROJECT_ID
+os.environ["GOOGLE_CLOUD_LOCATION"] = LOCATION
+
+
+async def call_agent_async(prompt: str|Content):
+    # Initialize the ADK runtime components
+    session_service = InMemorySessionService()
+
+    runner = Runner(
+        agent=root_agent, app_name="root_agent", session_service=session_service
+    )
+
+    # Create a session using the service
+    session = await session_service.create_session(
+        app_name="root_agent", user_id="default_user"
+    )
+
+    # Prepare the input message
+    if isinstance(prompt, str):
+        message = Content(role="user", parts=[Part(text=prompt)])
+    else: # is Content
+        message = prompt
+
+    print(f"🛑 [System] Safety Limit set to {MAX_STEPS} steps.")
+    step_count = 0
+
+    # Run the agent and print the response
+    async for event in runner.run_async(
+        session_id=session.id, user_id="default_user", new_message=message
+    ):
+        step_count += 1
+        
+        if step_count > MAX_STEPS:
+            print(f"\n❌ [System] TERMINATING: Hit max step limit ({MAX_STEPS}).")
+            print("   Likely cause: Infinite loop due to recurring tool errors (404/Connection Refused).")
+            break  # Force exit
+
+        if event.is_final_response():
+            # Check if there is actual text content
+            if event.content and event.content.parts:
+                print(f"\n🤖 [{root_agent.name}]: {event.content.parts[0].text}")
+            else:
+                print("\n🤖 [{root_agent.name}]: (Returned final response with no text)")
+            break 
+            
+        # If it's not final, the agent is thinking/calling tools
+        print(f"   ⚙️ [System] Step {step_count}: Processing...")
+
+
+# Run parameterized tests N times
+N = 1
+@pytest.mark.parametrize(
+    "run_number",
+    range(N),
+)
+@pytest.mark.parametrize(
+    "prompt",
+    parameterized_test_data,
+)
+def test_run(prompt, run_number):
+    print(f"🚀 [root_agent] Launching test run {run_number}...")
+    print(f"📝 Prompt: {prompt}")
+
+    _, _ = google.auth.default()
+    print(f"☁️ Project: {PROJECT_ID}, Region: {LOCATION}")
+
+    _ = genai.Client(
+        vertexai=True,
+        project=PROJECT_ID,
+        location=LOCATION,
+    )
+
+    asyncio.run(call_agent_async(prompt))
