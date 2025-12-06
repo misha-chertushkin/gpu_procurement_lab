@@ -200,7 +200,7 @@ ifndef phase
 endif
 	@echo "🔍 Executing Unit Tests for Phase $(phase)"
 	make -C labs/phase$(phase) install
-	@bash -c ". scripts/base_env.sh && labs/phase$(phase)/venv/bin/python -m pytest -W "ignore::DeprecationWarning" labs/phase$(phase)/tests --junitxml=.labs/phase$(phase)/build/test-results.xml"
+	@bash -c ". scripts/base_env.sh && labs/phase$(phase)/venv/bin/python -m pytest -v -s --log-cli-level=INFO -W "ignore::DeprecationWarning" labs/phase$(phase)/tests --junitxml=.labs/phase$(phase)/build/test-results.xml"
 
 
 
@@ -214,7 +214,7 @@ endif
 		if [ -d "$$lab" ]; then \
 			echo "🔍 Executing Unit Tests for $$lab"; \
 			make -C $$lab install; \
-			bash -c ". scripts/base_env.sh && TEST_COUNT=$(test_count) $$lab/venv/bin/python -m pytest -W 'ignore::DeprecationWarning' $$lab/tests --junitxml=$$lab/build/test-results.xml"; \
+			bash -c ". scripts/base_env.sh && TEST_COUNT=$(test_count) $$lab/venv/bin/python -m pytest -v -s --log-cli-level=INFO -W 'ignore::DeprecationWarning' $$lab/tests --junitxml=$$lab/build/test-results.xml | tee $$lab/build/test-results.log"; \
 		fi \
 	done
 
