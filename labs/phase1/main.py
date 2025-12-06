@@ -18,7 +18,6 @@ import os
 
 from dotenv import load_dotenv
 import google.auth
-import vertexai
 from google import genai
 from agents.commander.agent import root_agent
 from google.adk.runners import Runner
@@ -43,11 +42,6 @@ load_dotenv()
 PROJECT_ID = os.getenv("PROJECT_ID", "unset")
 LOCATION = os.getenv("LOCATION", "us-central1")
 
-
-vertexai.init(
-    project=PROJECT_ID,
-    location=LOCATION,
-)
 
 os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "1"
 os.environ["GOOGLE_CLOUD_PROJECT"] = PROJECT_ID
@@ -107,7 +101,6 @@ def main():
 
     application_default_credentials, _ = google.auth.default()
     print(f"Project: {config.PROJECT_ID}, Region: {config.REGION}")
-    vertexai.init(project=config.PROJECT_ID, location=config.REGION)
 
     asyncio.run(call_agent_async())
 
