@@ -21,8 +21,7 @@ from utils.config import config
 class ContractAnalyzer:
     def __init__(self):
         vertexai.init(project=config.PROJECT_ID, location=config.REGION)
-        self.model = GenerativeModel("gemini-2.5-pro")
-        #self.model = GenerativeModel("gemini-3-pro-preview")
+        self.model = GenerativeModel("gemini-3-pro-preview")
         self.storage_client = storage.Client()
 
     def analyze_contract_clause(self, doc_name: str, clause_type: str) -> str:
