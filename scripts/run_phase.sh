@@ -48,11 +48,11 @@ fuser -k $API_PORT/tcp > /dev/null 2>&1
 
 # Start API in background
 cd assets/mock_api
-uvicorn main:app --host $API_HOST --port $API_PORT > ../../api_logs.txt 2>&1 &
+uvicorn main:app --host $API_HOST --port $API_PORT > ../../logs/api_logs.txt 2>&1 &
 API_PID=$!
 cd ../..
 
-echo "✅ API running in background (PID: $API_PID). Logs at ./api_logs.txt"
+echo "✅ API running in background (PID: $API_PID). Logs at ./logs/api_logs.txt"
 echo "   Waiting 5 seconds for API to warm up..."
 sleep 5
 

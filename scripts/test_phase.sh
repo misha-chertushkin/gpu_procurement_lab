@@ -48,11 +48,11 @@ fuser -k $API_PORT/tcp > /dev/null 2>&1
 
 # Start API in background
 cd assets/mock_api
-uvicorn main:app --host $API_HOST --port $API_PORT > ../../api_logs.txt 2>&1 &
+uvicorn main:app --host $API_HOST --port $API_PORT > ../../logs/api_logs.txt 2>&1 &
 API_PID=$!
 cd ../..
 
-echo "✅ API running in background (PID: $API_PID). Logs at ./api_logs.txt"
+echo "✅ API running in background (PID: $API_PID). Logs at ./logs/api_logs.txt"
 echo "   Waiting 5 seconds for API to warm up..."
 sleep 5
 
@@ -65,7 +65,7 @@ echo "---------------------------------------------------------------"
 
 
 # Run the main agent loop
-python -m pytest -v -s --log-cli-level=INFO -W "ignore::DeprecationWarning" $PHASE_DIR/tests --junitxml=$PHASE_DIR/build/test-results.xml 2>&1 | tee .$PHASE_DIR/build/latest-test-logs.log
+python -m pytest -v -s --log-cli-level=INFO -W "ignore::DeprecationWarning" $PHASE_DIR/tests --junitxml=$PHASE_DIR/build/latest-test-results.xml 2>&1 | tee $PHASE_DIR/build/latest-test-results.log
 
 # --- Cleanup ---
 echo -e "\n${BLUE}🧹 Cleaning up...${NC}"
