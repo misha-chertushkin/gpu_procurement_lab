@@ -19,12 +19,12 @@ API_PORT=8080
 API_HOST="127.0.0.1"
 # Check if phase number is provided
 if [ -z "$1" ]; then
-    echo "Usage: $0 <phase_number>"
+    echo "Usage: $0 <phase>"
     exit 1
 fi
 
-PHASE_NUM=$1
-PHASE_DIR="labs/phase$PHASE_NUM"
+PHASE=$1
+PHASE_DIR="labs/$PHASE"
 VENV_DIR="$PHASE_DIR/venv"
 
 # Colors for output
@@ -38,7 +38,7 @@ NC='\033[0m' # No Color
 
 source $VENV_DIR/bin/activate
 
-echo -e "${BLUE}🚀 Running Vertex AI L400 Lab 2 Test for Phase $PHASE_NUM...${NC}"
+echo -e "${BLUE}🚀 Running Vertex AI L400 Lab 2 Test for Phase $PHASE...${NC}"
 
 # --- Step 1: The External World (Mock API) ---
 echo -e "\n${BLUE}[1/2] Launching Mock Spot Market API...${NC}"
@@ -65,7 +65,7 @@ echo "---------------------------------------------------------------"
 
 
 # Run the main agent loop
-python -m pytest -v -s --log-cli-level=INFO -W "ignore::DeprecationWarning" labs/phase$PHASE_NUM/tests --junitxml=labs/phase$PHASE_NUM/build/test-results.xml 2>&1 | tee .labs/phase$PHASE_NUM/build/latest-test-logs.log
+python -m pytest -v -s --log-cli-level=INFO -W "ignore::DeprecationWarning" $PHASE_DIR/tests --junitxml=$PHASE_DIR/build/test-results.xml 2>&1 | tee .$PHASE_DIR/build/latest-test-logs.log
 
 # --- Cleanup ---
 echo -e "\n${BLUE}🧹 Cleaning up...${NC}"

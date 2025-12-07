@@ -42,6 +42,11 @@ INFRA_FILES := $(foreach dir,$(INFRA_DIRS),$(wildcard $(dir)/*.tf) $(wildcard $(
 INIT_TIMESTAMP := infra/.terraform.initialized
 DEPLOY_TIMESTAMP := infra/.terraform.deployed
 
+ASSET_DIRS := $(shell find assets -type d)
+ASSETS_FILES := $(foreach dir,$(ASSET_DIRS),$(wildcard $(dir)/*.py) $(wildcard $(dir)/*.sh))
+
+LABS := $(wildcard labs/*)
+
 
 # Default target
 .PHONY: all
@@ -132,9 +137,6 @@ else
 endif
 
 
-ASSET_DIRS := $(shell find assets -type d)
-ASSETS_FILES := $(foreach dir,$(ASSET_DIRS),$(wildcard $(dir)/*.py) $(wildcard $(dir)/*.sh))
-
 # Hydrate infra resources
 .PHONY: hydrate
 hydrate: $(HYDRATE_TIMESTAMP)
@@ -169,35 +171,35 @@ install: $(INSTALL_TIMESTAMP)
 # Run a phase demo
 .PHONY: run
 run: hydrate
-ifndef phase
-	$(error phase is not set! e.g., make run phase=1)
+ifndef lab
+	$(error lab is not set! e.g., make run lab=phase1)
 endif
-	@echo "🚀 Starting Local Test Agent for Phase $(phase)"
-	make -C labs/phase$(phase) install
-	scripts/run_phase.sh $(phase)
+	@echo "🚀 Starting Local Test Agent for Lab $(lab)"
+	make -C labs/$(lab) install
+	scripts/run_phase.sh $(lab)
 
 # Run a phase test
 .PHONY: test
 test: hydrate
-ifndef phase
-	$(error phase is not set! e.g., make test phase=1)
+ifndef lab
+	$(error phase is not set! e.g., make test lab=phase1)
 endif
-	@echo "🔍 Executing Unit Tests for Phase $(phase)"
-	make -C labs/phase$(phase) install
-	scripts/test_phase.sh $(phase)
+	@echo "🔍 Executing Unit Tests for Phase $(lab)"
+	make -C labs/$(lab) install
+	scripts/test_phase.sh $(lab)
 
 
 # Run a command in each lab
 .PHONY: batch-tests
 batch-tests:
-ifndef test_count
-	$(error test_count is not set! e.g., make batch-tests test_count=1)
+ifndef count
+	$(error count is not set! e.g., make batch-tests count=1)
 endif
-	@for lab in labs/*; do \
-		if [ -d "$$lab" ]; then \
+	@for lab in $(LABS); do \
+		if [ -d "$$lab" ] && [ "$${lab##*/}" != "labs" ]; then \
 			echo "🔍 Executing Unit Tests for $$lab"; \
 			make -C $$lab install; \
-			bash -c ". scripts/base_env.sh && TEST_COUNT=$(test_count) $$lab/venv/bin/python -m pytest -v -s --log-cli-level=INFO -W 'ignore::DeprecationWarning' $$lab/tests --junitxml=$$lab/build/test-results.xml | tee $$lab/build/test-results.log"; \
+			bash -c ". scripts/base_env.sh && TEST_COUNT=$(count) && scripts/test_phase.sh $${lab##*/}"; \
 		fi \
 	done
 
@@ -206,7 +208,7 @@ endif
 .PHONY: test-summary
 test-summary:
 	@echo "📊 Generating test summary report..."
-	@$(VENV)/bin/python scripts/generate_test_summary.py $(wildcard labs/phase*/build/test-results.xml)
+	@$(VENV)/bin/python scripts/generate_test_summary.py $(foreach lab,$(LABS),$(wildcard $(lab)/build/test-results.xml))
 	@echo "✅ Report saved to TEST_RESULTS.md"
 
 
@@ -225,9 +227,10 @@ ifndef phase
 	find . -type d -name ".ruff_cache" -exec rm -rf {} +
 	find . -type d -name "*.egg-info" -exec rm -rf {} +
 	find . -name ".coverage" -exec rm -f {} +
-endif
+else
 	@echo "🗑️  Executing Clean for Phase $(phase)"
-	make -C labs/phase$(phase) clean
+	make -C labs/$(phase) clean
+endif
 
 
 # Help
@@ -248,6 +251,5 @@ help:
 	@echo "  make venv                 - Create virtual environment"
 	@echo "  make install              - Install runtime dependencies"
 	@echo "  make hydrate              - Hydrate infrastructure resources"
-	@echo "  make run phase=<phase>    - Run a phase demo (e.g., make run phase=1)"
-	@echo "  make test phase=<phase>   - Run a phase test (e.g., make test phase=1)"
-
+	@echo "  make run lab=<lab>        - Run a lab demo (e.g., make run lab=phase1)"
+	@echo "  make test lab=<lab>       - Run a lab test (e.g., make test lab=phase1)"

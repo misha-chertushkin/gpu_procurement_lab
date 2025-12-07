@@ -19,12 +19,12 @@ API_PORT=8080
 API_HOST="127.0.0.1"
 # Check if phase number is provided
 if [ -z "$1" ]; then
-    echo "Usage: $0 <phase_number>"
+    echo "Usage: $0 <phase>"
     exit 1
 fi
 
-PHASE_NUM=$1
-PHASE_DIR="labs/phase$PHASE_NUM"
+PHASE=$1
+PHASE_DIR="labs/$PHASE"
 VENV_DIR="$PHASE_DIR/venv"
 
 # Colors for output

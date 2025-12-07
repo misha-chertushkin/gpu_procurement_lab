@@ -17,30 +17,30 @@ make deploy project=YOUR_PROJECT_ID
 
 ## Step 3a: Run a Live Demo for a given Phase
 
-To run a specific demo phase, use the **make run** target with the phase number input.
+To run a specific demo phase, use the **make run** target with the lab sub-folder sub-folder/phase input.
 
 ```bash
-make run phase=YOUR_PHASE_NUMBER
+make run lab=YOUR_LAB_PHASE_FOLDER
 ```
 
-For example
+For example, for labs/phase1:
 
 ```bash
-make run phase=1
+make run lab=phase1
 ```
 
 ## Step 3b: Run a Headless Test for a given Phase
 
-To run a headless test for a specific demo phase, use the **make test** target with the phase number input.
+To run a headless test for a specific demo phase, use the **make test** target with the lab sub-folder/phase input.
 
 ```bash
-make test phase=YOUR_PHASE_NUMBER
+make test lab=YOUR_LAB_PHASE_FOLDER
 ```
 
-For example
+For example, for labs/phase1:
 
 ```bash
-make test phase=1
+make test lab=phase1
 ```
 
 ## Step 4: Destroy Cloud Resources
