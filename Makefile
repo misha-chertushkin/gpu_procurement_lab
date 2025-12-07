@@ -182,19 +182,9 @@ test: hydrate
 ifndef phase
 	$(error phase is not set! e.g., make test phase=1)
 endif
-	@echo "🔍 Executing Manual Test Run for Phase $(phase)"
-	make -C labs/phase$(phase) install
-	scripts/test_phase.sh $(phase)
-
-
-.PHONY: tests
-tests: hydrate
-ifndef phase
-	$(error phase is not set! e.g., make test phase=1)
-endif
 	@echo "🔍 Executing Unit Tests for Phase $(phase)"
 	make -C labs/phase$(phase) install
-	@bash -c ". scripts/base_env.sh && labs/phase$(phase)/venv/bin/python -m pytest -v -s --log-cli-level=INFO -W "ignore::DeprecationWarning" labs/phase$(phase)/tests --junitxml=.labs/phase$(phase)/build/test-results.xml"
+	scripts/test_phase.sh $(phase)
 
 
 # Run a command in each lab
