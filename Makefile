@@ -202,6 +202,14 @@ endif
 	done
 
 
+# Generate a test summary report
+.PHONY: test-summary
+test-summary:
+	@echo "📊 Generating test summary report..."
+	@$(VENV)/bin/python scripts/generate_test_summary.py $(wildcard labs/phase*/build/test-results.xml)
+	@echo "✅ Report saved to TEST_RESULTS.md"
+
+
 # Clean the Environment
 .PHONY: clean
 clean:
