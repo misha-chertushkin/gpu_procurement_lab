@@ -65,7 +65,7 @@ echo "---------------------------------------------------------------"
 
 
 # Run the main agent loop
-python -m pytest -v -s --log-cli-level=INFO -W "ignore::DeprecationWarning" labs/phase$PHASE_NUM/tests --junitxml=.labs/phase$PHASE_NUM/build/test-results.xml 2>&1 | tee .labs/phase$PHASE_NUM/build/latest-test-logs.log
+python -m pytest -v -s --log-cli-level=INFO -W "ignore::DeprecationWarning" labs/phase$PHASE_NUM/tests --junitxml=labs/phase$PHASE_NUM/build/test-results.xml 2>&1 | tee .labs/phase$PHASE_NUM/build/latest-test-logs.log
 
 # --- Cleanup ---
 echo -e "\n${BLUE}🧹 Cleaning up...${NC}"
