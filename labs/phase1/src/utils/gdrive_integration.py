@@ -66,7 +66,7 @@ class ReportGenerator:
             logger.error(f"Failed to authenticate with Google Drive: {e}")
             raise
 
-    def upload_report(self, filename: str, content: str, metadata: dict) -> str:
+    def upload_report(self, filename: str, content: str, metadata: Dict = None) -> str:
         """
         Uploads the Executive Report to Google Drive.
 
