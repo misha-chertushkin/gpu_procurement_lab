@@ -316,5 +316,6 @@ exports
 
 !iac/config.tfvars
 !venv/
+!**/venv/
 !.venv/
 !**/.venv/
