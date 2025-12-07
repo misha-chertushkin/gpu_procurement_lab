@@ -13,10 +13,9 @@
 # limitations under the License.
 
 import os
-from typing import List, Union
+from typing import List
 import logging
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -33,7 +32,7 @@ class FileSystemTools:
         """
         Sanitizes the path to ensure it stays within the root_dir.
         """
-        # Prevent directory traversal attacks (simple check)
+        # Prevent directory traversal attacks
         if ".." in filename or filename.startswith("/"):
             raise ValueError(f"Security Error: Access to {filename} is forbidden.")
 
@@ -65,7 +64,6 @@ class FileSystemTools:
     def append_to_log(self, filename: str, content: str) -> str:
         """
         Appends text to a file. Useful for maintaining a running log or tracker.
-        Automatically adds a timestamp if it's a log.
         """
         safe_path = self._get_safe_path(filename)
         try:
@@ -77,7 +75,7 @@ class FileSystemTools:
 
     def write_file(self, filename: str, content: str) -> str:
         """
-        Overwrites a file with new content. Use carefully.
+        Overwrites a file with new content. 
         """
         safe_path = self._get_safe_path(filename)
         try:

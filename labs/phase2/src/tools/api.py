@@ -23,7 +23,7 @@ class LogisticsTools:
 
     def fetch_spot_prices(self, chip_type: str = "H100") -> Dict[str, Any]:
         """
-        Checks the spot market price for the given GPU using the API:
+        Checks the spot market price for a specific chip.
         Endpoint: GET /v1/market/spot?chip=H100 [cite: 97]
         """
         try:
@@ -37,7 +37,7 @@ class LogisticsTools:
 
     def estimate_shipping(self, origin: str, destination: str = "US") -> Dict[str, Any]:
         """
-        Quotes the shipping cost via the API.
+        Gets shipping estimates.
         Endpoint: GET /v1/shipping/estimate?origin=TW&dest=US [cite: 99]
         """
         try:
