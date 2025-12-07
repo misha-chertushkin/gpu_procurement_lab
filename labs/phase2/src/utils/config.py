@@ -21,7 +21,6 @@ from dotenv import load_dotenv
 # Load .env file if present
 load_dotenv()
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -132,7 +131,7 @@ class ProjectConfig:
     )
 
     # Model Configuration
-    MODEL_NAME: str = _loader.get("MODEL_NAME", default="gemini-2.5-pro")
+    MODEL_NAME: str = _loader.get("MODEL_NAME", default="gemini-3-pro-preview")
 
 
 # Singleton instance
