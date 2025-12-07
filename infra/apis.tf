@@ -47,3 +47,27 @@ resource "google_project_service" "serviceusage_api" {
   service            = "serviceusage.googleapis.com"
   disable_on_destroy = false
 }
+
+# Enable the Telemetry API
+resource "google_project_service" "telemetry_api" {
+  service            = "telemetry.googleapis.com"
+  disable_on_destroy = false
+}
+
+# Enable the Cloud Logging API
+resource "google_project_service" "logging_api" {
+  service            = "logging.googleapis.com"
+  disable_on_destroy = false
+}
+
+# Enable the Cloud Trace API
+resource "google_project_service" "cloudtrace_api" {
+  service            = "cloudtrace.googleapis.com"
+  disable_on_destroy = false
+}
+
+# Enable the Cloud Monitoring API
+resource "google_project_service" "monitoring_api" {
+  service            = "monitoring.googleapis.com"
+  disable_on_destroy = false
+}
