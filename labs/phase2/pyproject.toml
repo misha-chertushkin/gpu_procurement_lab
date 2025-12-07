@@ -11,7 +11,7 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "google-cloud-aiplatform",
+    "google-cloud-aiplatform>=1.129.0",
     "google-cloud-bigquery",
     "google-cloud-storage",
     "pandas",
@@ -20,24 +20,30 @@ dependencies = [
     "reportlab",
     "fastapi",
     "uvicorn",
+    'opentelemetry-instrumentation-google-genai>=0.4b0',
+    'opentelemetry-instrumentation-sqlite3>=0.58b0',
+    'opentelemetry-exporter-gcp-logging>=1.11.0a0',
+    'opentelemetry-exporter-gcp-monitoring>=1.11.0a0',
+    'opentelemetry-exporter-otlp-proto-grpc>=1.37.0',
+    'opentelemetry-instrumentation-vertexai>=0.48.1',
     # Add your ADK specific dependency here if it's a public package,
     # otherwise it might need to be installed separately.
     "google-cloud-bigquery>=3.10.0",
     "google-cloud-storage>=2.14.0",
-    "google-adk",
+    "google-adk>=1.20.0",
     "python-dotenv",
     "google-cloud-secret-manager",
-    "google-auth",
-    "google-api-python-client>=2.100.0",
-    "google-auth-httplib2>=0.1.1",
-    "google-auth-oauthlib>=1.1.0",
+    "google-auth>=2.43.0",
+    "google-api-python-client>=2.187.0",
+    "google-auth-httplib2>=0.2.1",
+    "google-auth-oauthlib>=1.2.2",
 ]
 
 [project.optional-dependencies]
 dev = [
-  "pytest",
-  "black",
-  "ruff"
+    "pytest",
+    "black",
+    "ruff"
 ]
 
 # This section is critical for the 'src' layout
