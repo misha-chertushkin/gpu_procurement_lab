@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Enable the Cloud Resource Manager API
+resource "google_project_service" "cloudresourcemanager_api" {
+  service            = "cloudresourcemanager.googleapis.com"
+  disable_on_destroy = false
+}
+
 # Enable the BigQuery API
 resource "google_project_service" "bigquery_api" {
   service            = "bigquery.googleapis.com"
