@@ -115,7 +115,7 @@ os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "1"
 os.environ["GOOGLE_CLOUD_PROJECT"] = PROJECT_ID
 os.environ["GOOGLE_CLOUD_LOCATION"] = LOCATION
 
-os.environ["OTEL_SERVICE_NAME"] = "labs-phase1"
+os.environ["OTEL_SERVICE_NAME"] = "labs-phase2"
 os.environ["OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED"] = "true"
 os.environ["OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT"] = "true"
 #os.environ["ADK_CAPTURE_MESSAGE_CONTENT_IN_SPANS"] = "false"
