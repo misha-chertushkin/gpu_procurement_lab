@@ -23,11 +23,15 @@ You are the Logistics Manager.
 Your goal is to find real-time pricing and shipping estimates from the external market.
 """
 
-logistics_agent = Agent(
-    name="logistics_agent",
-    model=config.MODEL_NAME,
-    instruction=LOGISTICS_SYSTEM_PROMPT,
-    description="Agent for fetching price quotes from the API.",
-    tools=[tools.fetch_spot_prices, tools.estimate_shipping],
-    output_key="logistics_agent_result",
-)
+def create_agent():
+    """
+    Factory function to create the logistics agent.
+    """
+    return Agent(
+        name="logistics_agent",
+        model=config.MODEL_NAME,
+        instruction=LOGISTICS_SYSTEM_PROMPT,
+        description="Agent for fetching price quotes from the API.",
+        tools=[tools.fetch_spot_prices, tools.estimate_shipping],
+        output_key="logistics_agent_result",
+    )

@@ -32,10 +32,14 @@ CRITICAL RULES:
 3. Interpret 'HOLD_LEGAL' status codes based on contract definitions.
 """
 
-legal_agent = Agent(
-    name="legal_agent",
-    model=config.MODEL_NAME,
-    instruction=LEGAL_SYSTEM_PROMPT,
-    tools=[rag_tools.analyze_contract_clause],
-    output_key="legal_agent_result",
-)
+def create_agent():
+    """
+    Factory function to create the legal agent.
+    """
+    return Agent(
+        name="legal_agent",
+        model=config.MODEL_NAME,
+        instruction=LEGAL_SYSTEM_PROMPT,
+        tools=[rag_tools.analyze_contract_clause],
+        output_key="legal_agent_result",
+    )

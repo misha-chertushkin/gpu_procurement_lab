@@ -20,7 +20,7 @@ from google import genai
 from dotenv import load_dotenv
 
 # Import the sub-agents
-from agents.source_gpus.agent import source_gpus_agent
+from agents.source_gpus.agent import create_agent as create_agent_source_gpus_agent
 
 # Import the new File System Tools
 from tools.file_system import FileSystemTools
@@ -78,5 +78,5 @@ root_agent = Agent(
     name="root_agent",
     model=config.MODEL_NAME,
     instruction=COMMANDER_SYSTEM_PROMPT,
-    sub_agents=[source_gpus_agent],
+    sub_agents=[create_agent_source_gpus_agent()],
 )
