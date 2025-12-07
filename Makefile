@@ -190,10 +190,10 @@ endif
 
 
 # Run a command in each lab
-.PHONY: batch-tests
-batch-tests:
+.PHONY: batch-test
+batch-test:
 ifndef count
-	$(error count is not set! e.g., make batch-tests count=1)
+	$(error count is not set! e.g., make batch-test count=1)
 endif
 	@for lab in $(LABS); do \
 		if [ -d "$$lab" ] && [ "$${lab##*/}" != "labs" ]; then \
@@ -237,19 +237,20 @@ endif
 .PHONY: help
 help:
 	@echo "Usage:"
-	@echo "  make init                 - Initialize Terraform"
-	@echo "  make deploy               - Deploy Terraform infra"
-	@echo "  make destroy              - Destroy Terraform infra"
-	@echo "  make update-branch        - Refreshes remote Git branches into workspace"
-	@echo "  make get-sa               - Fetch the service account associated with the environment"
-	@echo "  make gcloud-check         - Check the active GCloud login and project"
-	@echo "  make login                - Login to GCloud"
-	@echo "  make set-project          - Configure GCloud project"
-	@echo "  make graph                - Update /docs/ PNG and SVG for Terraform resources"
-	@echo "  make clean                - Clean environment"
-	@echo "  make help                 - Show help"
-	@echo "  make venv                 - Create virtual environment"
-	@echo "  make install              - Install runtime dependencies"
-	@echo "  make hydrate              - Hydrate infrastructure resources"
-	@echo "  make run lab=<lab>        - Run a lab demo (e.g., make run lab=phase1)"
-	@echo "  make test lab=<lab>       - Run a lab test (e.g., make test lab=phase1)"
+	@echo "  make init                     - Initialize Terraform"
+	@echo "  make deploy                   - Deploy Terraform infra"
+	@echo "  make destroy                  - Destroy Terraform infra"
+	@echo "  make update-branch            - Refreshes remote Git branches into workspace"
+	@echo "  make get-sa                   - Fetch the service account associated with the environment"
+	@echo "  make gcloud-check             - Check the active GCloud login and project"
+	@echo "  make login                    - Login to GCloud"
+	@echo "  make set-project              - Configure GCloud project"
+	@echo "  make graph                    - Update /docs/ PNG and SVG for Terraform resources"
+	@echo "  make clean                    - Clean environment"
+	@echo "  make help                     - Show help"
+	@echo "  make venv                     - Create virtual environment"
+	@echo "  make install                  - Install runtime dependencies"
+	@echo "  make hydrate                  - Hydrate infrastructure resources"
+	@echo "  make run lab=<lab>            - Run a lab demo (e.g., make run lab=phase1)"
+	@echo "  make test lab=<lab>           - Run a lab test (e.g., make test lab=phase1)"
+	@echo "  make batch-test count=<count> - Run a batch test for all labs (e.g., make batch-test count=10)"

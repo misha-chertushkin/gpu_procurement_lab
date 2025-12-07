@@ -43,6 +43,20 @@ For example, for labs/phase1:
 make test lab=phase1
 ```
 
+## Step 3c: Run a Headless Batch Test for all Phases
+
+To run a headless test for all phases, use the **make batch-test** target with the specific count.
+
+```bash
+make batch-test count=YOUR_LAB_PHASE_FOLDER
+```
+
+For example, for 10 test runs for each lab:
+
+```bash
+make batch-test count=10
+```
+
 ## Step 4: Destroy Cloud Resources
 
 Destroy Resources via Makefile:
