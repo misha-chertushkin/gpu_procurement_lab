@@ -15,6 +15,14 @@
 # Define locals
 locals {
   scripts_dir = "${path.root}/../scripts/"
+  logs_dir = "${path.root}/../logs/"
+  workspace_dir = "${path.root}/../workspace/"
+
+  dir_paths = {
+    "scripts" = local.scripts_dir,
+    "logs" = local.logs_dir,
+    "workspace" = local.workspace_dir,
+  }
 
   file_templates = {
     "base_env.sh" = {
@@ -29,10 +37,12 @@ locals {
   }
 }
 
-# Create Scripts Directory if missing
-resource "null_resource" "create_scripts_dir_if_missing" {
+# Create directories if missing
+resource "null_resource" "create_dirs_if_missing" {
+  for_each = local.dir_paths
   provisioner "local-exec" {
-    command = "mkdir -p ${local.scripts_dir}"
+    command = "mkdir -p ${each.value}"
+    interpreter = [ "bash", "-c" ]
   }
 }
 
@@ -45,6 +55,6 @@ resource "local_file" "templated_files" {
   file_permission = each.value.permissions
 
   depends_on = [
-    null_resource.create_scripts_dir_if_missing
+    null_resource.create_dirs_if_missing
   ]
 }
