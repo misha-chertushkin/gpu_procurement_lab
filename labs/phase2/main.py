@@ -32,6 +32,11 @@ from google.genai import types
 from google.genai.types import Content, Part
 from utils.config import config
 
+from opentelemetry import context, trace
+from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
+from opentelemetry.sdk.trace import export
+from opentelemetry.sdk.trace import TracerProvider
+
 # Configure Logging
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("google_adk").setLevel(logging.DEBUG)
@@ -103,14 +108,23 @@ PROJECT_ID = os.getenv("PROJECT_ID", "unset")
 LOCATION = os.getenv("LOCATION", "us-central1")
 
 
-vertexai.init(
-    project=PROJECT_ID,
-    location=LOCATION,
-)
-
 os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "1"
 os.environ["GOOGLE_CLOUD_PROJECT"] = PROJECT_ID
 os.environ["GOOGLE_CLOUD_LOCATION"] = LOCATION
+
+os.environ["OTEL_SERVICE_NAME"] = "labs-phase2"
+os.environ["OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED"] = "true"
+os.environ["OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT"] = "true"
+#os.environ["ADK_CAPTURE_MESSAGE_CONTENT_IN_SPANS"] = "false"
+
+
+provider = TracerProvider()
+processor = export.BatchSpanProcessor(
+    CloudTraceSpanExporter(project_id=PROJECT_ID)
+)
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+
 
 genai_client = genai.Client(
     vertexai=True,
@@ -167,11 +181,28 @@ def main():
     print("🚀 [System] Incident Command War Room Initialized.")
     print("Context: Production halted. Missing 500 H100 GPUs.")
 
-    application_default_credentials, _ = google.auth.default()
+    _, _ = google.auth.default()
     print(f"Project: {config.PROJECT_ID}, Region: {config.REGION}")
-    vertexai.init(project=config.PROJECT_ID, location=config.REGION)
 
-    asyncio.run(call_agent_async())
+    # Correctly monkey patch context.detach to handle GeneratorExit
+    _original_detach = context.detach
+
+    def _patched_detach(token: context.Token) -> None:
+        try:
+            _original_detach(token)
+        except GeneratorExit:
+            logging.debug("Ignoring GeneratorExit during context detachment.")
+            pass
+
+    context.detach = _patched_detach
+
+    try:
+        asyncio.run(call_agent_async())
+    finally:
+        # Force flush and shutdown of the tracer provider to ensure all spans are
+        # exported before the program exits.
+        print("\n[System] Shutting down OpenTelemetry tracer.")
+        provider.shutdown()
 
 
 if __name__ == "__main__":
