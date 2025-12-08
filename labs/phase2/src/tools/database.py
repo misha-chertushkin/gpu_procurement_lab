@@ -18,7 +18,7 @@ from utils.config import config
 import logging
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 class DatabaseTools:
@@ -27,20 +27,19 @@ class DatabaseTools:
 
     def run_query(self, sql_query: str) -> List[Dict[str, Any]]:
         """Executes the given SQL query and returns the list of rows or an error message."""
-        print(f"\n[DB TOOL] Executing SQL:\n    {sql_query}")
+        log.info(f"[🔧 run_query] Executing SQL:\n    {sql_query}")
         try:
             query_job = self.client.query(sql_query)
             results = [dict(row) for row in query_job.result()]
-            print(f"[✅ DB TOOL] Success. Rows returned: {len(results)}")
+            log.info(f"[✅ run_query] Success. Rows returned: {len(results)}")
             return results
         except Exception as e:
-            print(f"[❌ DB TOOL] Error: {str(e)}")
-            logger.error(f"Query failed: {e}")
+            log.error(f"[❌ run_query] Error: {e}")
             return [{"error": str(e)}]
 
     def explore_schema(self, table_name: str) -> Dict[str, Any]:
         """Returns the list of columns for the specified table, and a sample of data from the first 5 rows."""
-        print(f"\n[DB TOOL] Exploring Schema for: {table_name}")
+        log.info(f"[🔧 explore_schema] Exploring Schema for: {table_name}")
         table_name = table_name.replace(";", "").replace("--", "")
         # Handle cases where LLM passes the full ID vs just short table name
         if "." in table_name:
@@ -55,13 +54,14 @@ class DatabaseTools:
             ]
             sample_query = f"SELECT * FROM `{full_table_name}` LIMIT 5"
             sample_rows = self.run_query(sample_query)
+            log.info(f"[✅ explore_schema] Success. Rows returned: {len(sample_rows)}")
             return {
                 "table_name": table_name,
                 "fully_qualified_table_name": full_table_name,  # Help the agent learn the right name
                 "columns": schema_info,
                 "sample_rows": sample_rows,
-                "note": f"Use only the fully_qualified_table_name in all SQL queries",
+                "note": "Use only the fully_qualified_table_name in all SQL queries",
             }
         except Exception as e:
-            print(f"[❌ DB TOOL] Schema Error: {str(e)}")
+            log.error(f"[❌ explore_schema] Schema Error: {str(e)}")
             return {"error": f"Exception while loading the database schema: {str(e)}"}

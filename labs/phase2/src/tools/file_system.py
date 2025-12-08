@@ -17,7 +17,7 @@ from typing import List
 import logging
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 class FileSystemTools:
@@ -42,45 +42,60 @@ class FileSystemTools:
         """
         Lists all files in the current workspace.
         """
+        log.info(f"[🔧 list_files] Listing files in {self.root_dir}")
         try:
-            return os.listdir(self.root_dir)
+            result = os.listdir(self.root_dir)
+            log.info("[✅ list_files] Success")
+            return result
         except Exception as e:
+            log.error(f"[❌ list_files] Error listing files: {str(e)}")
             return [f"Error listing files: {str(e)}"]
 
     def read_file(self, filename: str) -> str:
         """
         Reads the content of a specific file.
         """
+        log.info(f"[🔧 read_file] Reading {filename}")
         safe_path = self._get_safe_path(filename)
         if not os.path.exists(safe_path):
+            log.error(f"[❌ read_file] File {filename} does not exist.")
             return f"Error: File {filename} does not exist."
 
         try:
             with open(safe_path, "r") as f:
-                return f.read()
+                result = f.read()
+                log.info("[✅ read_file] Success")
+                return result
         except Exception as e:
+            log.error(f"[❌ read_file] Error reading file: {str(e)}")
             return f"Error reading file: {str(e)}"
 
     def append_to_log(self, filename: str, content: str) -> str:
         """
         Appends text to a file. Useful for maintaining a running log or tracker.
         """
+        log.info(f"[🔧 append_to_log] Addending to {filename}")
         safe_path = self._get_safe_path(filename)
         try:
             with open(safe_path, "a") as f:
                 f.write(content + "\n")
+            log.info(f"[✅ append_to_log] Success: Appended to {filename}.")
             return f"Success: Appended to {filename}."
         except Exception as e:
+            log.error(f"[❌ append_to_log] Error appending to file: {str(e)}")
             return f"Error appending to file: {str(e)}"
 
     def write_file(self, filename: str, content: str) -> str:
         """
         Overwrites a file with new content. 
         """
+        log.info(f"[🔧 write_file] Writing to {filename}")
         safe_path = self._get_safe_path(filename)
         try:
             with open(safe_path, "w") as f:
                 f.write(content)
+            log.info(f"[✅ write_file] Success: File {filename} created/overwritten.")
             return f"Success: File {filename} created/overwritten."
         except Exception as e:
+            log.error(f"[❌ write_file] Error writing file: {str(e)}")
             return f"Error writing file: {str(e)}"
