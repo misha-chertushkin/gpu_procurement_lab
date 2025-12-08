@@ -14,17 +14,14 @@
 
 import os
 import pytest
-
 import asyncio
 import logging
-
-from google.adk.utils.context_utils import Aclosing
-
 from dotenv import load_dotenv
 import google.auth
 from google import genai
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
+from google.adk.utils.context_utils import Aclosing
 from google.genai.types import Content, Part
 
 from opentelemetry import trace
@@ -36,8 +33,9 @@ from agents.commander.agent import root_agent
 
 # Configure Logging
 logging.basicConfig(level=logging.INFO)
-logging.getLogger("google_adk").setLevel(logging.DEBUG)
+logging.getLogger("google_adk").setLevel(logging.WARNING)
 logging.getLogger("httpx").setLevel(logging.WARNING)
+log = logging.getLogger(__name__)
 
 
 load_dotenv()
@@ -53,15 +51,6 @@ parameterized_test_data = [
 PROJECT_ID = os.getenv("PROJECT_ID", "unset")
 LOCATION = os.getenv("LOCATION", "us-central1")
 MAX_STEPS = int(os.getenv("MAX_STEPS", 100))
-
-os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "1"
-os.environ["GOOGLE_CLOUD_PROJECT"] = PROJECT_ID
-os.environ["GOOGLE_CLOUD_LOCATION"] = LOCATION
-
-os.environ["OTEL_SERVICE_NAME"] = "labs-phase2"
-os.environ["OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED"] = "true"
-os.environ["OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT"] = "true"
-os.environ["ADK_CAPTURE_MESSAGE_CONTENT_IN_SPANS"] = "true"
 
 provider = TracerProvider()
 processor = export.BatchSpanProcessor(
@@ -89,7 +78,7 @@ async def call_agent_async(prompt: str|Content):
     else: # is Content
         message = prompt
 
-    print(f"🛑 [System] Safety Limit set to {MAX_STEPS} steps.")
+    log.info(f"[🛑 System] Safety Limit set to {MAX_STEPS} steps.")
     step_count = 0
 
     # Run the agent and print the response
@@ -100,19 +89,18 @@ async def call_agent_async(prompt: str|Content):
             step_count += 1
             
             if step_count > MAX_STEPS:
-                print(f"\n❌ [System] TERMINATING: Hit max step limit ({MAX_STEPS}).")
+                log.error(f"[❌ System] TERMINATING: Hit max step limit ({MAX_STEPS}).")
                 break  # Force exit
 
             if event.is_final_response():
                 # Check if there is actual text content
                 if event.content and event.content.parts:
-                    print(f"\n🤖 [{root_agent.name}]: {event.content.parts[0].text}")
+                    log.info(f"[🤖 {event.author}]: {event.content.parts[0].text}")
                 else:
-                    print("\n🤖 [{root_agent.name}]: (Returned final response with no text)")
-                #break 
+                    log.info(f"[🤖 {event.author}]: (Returned final response with no text)")
                 
             # If it's not final, the agent is thinking/calling tools
-            print(f"   ⚙️ [System] Step {step_count}: Processing...")
+            log.info(f"[⚙️  System] Step {step_count}: Processing...")
 
 
 # Run parameterized tests N times
@@ -126,12 +114,11 @@ N = int(os.getenv("TEST_COUNT", 1))
     parameterized_test_data,
 )
 def test_run(prompt, run_number):
-    print(f"🚀 [root_agent] Launching test run {run_number}...")
-    print(f"📝 Prompt: {prompt}")
+    log.info(f"[🚀 System]: Launching test run {run_number}...")
+    log.info(f"[📝 Prompt]: {prompt}")
+    log.info(f"[☁️ Project]: {PROJECT_ID}, Region: {LOCATION}")
 
     _, _ = google.auth.default()
-    print(f"☁️ Project: {PROJECT_ID}, Region: {LOCATION}")
-
     _ = genai.Client(
         vertexai=True,
         project=PROJECT_ID,
