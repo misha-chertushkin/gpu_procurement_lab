@@ -13,18 +13,11 @@
 # limitations under the License.
 
 from google.adk.agents import Agent
-from google.adk.tools import AgentTool
 import os
-import vertexai
 from google import genai
 from dotenv import load_dotenv
 
-# Import the sub-agents
 from agents.source_gpus.agent import create_agent as create_agent_source_gpus_agent
-
-# Import the new File System Tools
-from tools.file_system import FileSystemTools
-from utils.gdrive_integration import ReportGenerator
 from utils.config import config
 
 
@@ -34,11 +27,6 @@ load_dotenv()
 PROJECT_ID = os.getenv("PROJECT_ID", "unset")
 LOCATION = os.getenv("LOCATION", "us-central1")
 
-
-vertexai.init(
-    project=PROJECT_ID,
-    location=LOCATION,
-)
 
 os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "1"
 os.environ["GOOGLE_CLOUD_PROJECT"] = PROJECT_ID
