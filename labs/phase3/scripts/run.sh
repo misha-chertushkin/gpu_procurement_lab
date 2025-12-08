@@ -46,11 +46,11 @@ mkdir -p ../../workspace/$PHASE/logs/
 
 # Start API in background
 cd ../../assets/mock_api
-uvicorn main:app --host $API_HOST --port $API_PORT > ../../workspace/$PHASE/logs/latest-run-mock-api.log 2>&1 &
+uvicorn main:app --host $API_HOST --port $API_PORT > ../../workspace/labs/$PHASE/logs/latest-run-mock-api.log 2>&1 &
 API_PID=$!
 cd ../..
 
-echo "✅ API running in background (PID: $API_PID). Logs at ./workspace/$PHASE/logs/latest-run-mock-api.log"
+echo "✅ API running in background (PID: $API_PID). Logs at ./workspace/labs/$PHASE/logs/latest-run-mock-api.log"
 echo "   Waiting 5 seconds for API to warm up..."
 sleep 5
 
