@@ -19,17 +19,13 @@ import logging
 from dotenv import load_dotenv
 import google.auth
 from google import genai
-from google.adk.runners import Runner
-from google.adk.sessions import InMemorySessionService
-from google.adk.utils.context_utils import Aclosing
-from google.genai.types import Content, Part
 
 from opentelemetry import trace
 from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
 from opentelemetry.sdk.trace import export
 from opentelemetry.sdk.trace import TracerProvider
 
-from agents.commander.agent import root_agent
+from agent import run_agent
 
 # Configure Logging
 logging.basicConfig(level=logging.INFO)
@@ -43,7 +39,7 @@ load_dotenv()
 
 parameterized_test_data = [
     (
-        "Start the investigation. Find me 500 H100s."
+        347
     ),
 ]
 
@@ -59,49 +55,6 @@ processor = export.BatchSpanProcessor(
 provider.add_span_processor(processor)
 trace.set_tracer_provider(provider)
 
-async def call_agent_async(prompt: str|Content):
-    # Initialize the ADK runtime components
-    session_service = InMemorySessionService()
-
-    runner = Runner(
-        agent=root_agent, app_name="root_agent", session_service=session_service
-    )
-
-    # Create a session using the service
-    session = await session_service.create_session(
-        app_name="root_agent", user_id="default_user"
-    )
-
-    # Prepare the input message
-    if isinstance(prompt, str):
-        message = Content(role="user", parts=[Part(text=prompt)])
-    else: # is Content
-        message = prompt
-
-    log.info(f"[🛑 System] Safety Limit set to {MAX_STEPS} steps.")
-    step_count = 0
-
-    # Run the agent and print the response
-    async with Aclosing(runner.run_async(
-        session_id=session.id, user_id="default_user", new_message=message
-    )) as agen:
-        async for event in agen:
-            step_count += 1
-            
-            if step_count > MAX_STEPS:
-                log.error(f"[❌ System] TERMINATING: Hit max step limit ({MAX_STEPS}).")
-                break  # Force exit
-
-            if event.is_final_response():
-                # Check if there is actual text content
-                if event.content and event.content.parts:
-                    log.info(f"[🤖 {event.author}]: {event.content.parts[0].text}")
-                else:
-                    log.info(f"[🤖 {event.author}]: (Returned final response with no text)")
-                
-            # If it's not final, the agent is thinking/calling tools
-            log.info(f"[⚙️  System] Step {step_count}: Processing...")
-
 
 # Run parameterized tests N times
 N = int(os.getenv("TEST_COUNT", 1))
@@ -110,12 +63,12 @@ N = int(os.getenv("TEST_COUNT", 1))
     range(N),
 )
 @pytest.mark.parametrize(
-    "prompt",
+    "qty",
     parameterized_test_data,
 )
-def test_run(prompt, run_number):
+def test_run(qty, run_number):
     log.info(f"[🚀 System]: Launching test run {run_number}...")
-    log.info(f"[📝 Prompt]: {prompt}")
+    log.info(f"[📝 Qty]: {qty}")
     log.info(f"[☁️ Project]: {PROJECT_ID}, Region: {LOCATION}")
 
     _, _ = google.auth.default()
@@ -125,5 +78,5 @@ def test_run(prompt, run_number):
         location=LOCATION,
     )
 
-    asyncio.run(call_agent_async(prompt))
+    asyncio.run(run_agent(qty))
     

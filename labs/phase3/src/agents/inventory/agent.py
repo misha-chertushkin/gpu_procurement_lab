@@ -1,11 +1,11 @@
 # Copyright 2025 Google LLC
-#
+# 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
+#     https://www.apache.org/licenses/LICENSE-2.0
+# 
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,13 +26,17 @@ INSTRUCTIONS:
 1. This is a legacy database with messy names of tables and columns. Use the `explore_schema` tool to learn about the structure of tables `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_CATALOG}` and `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_INVENTORY}`.
 2. Use your best judgement to figure out the role of each table and column, and find an optimal way to join these tables.
 3. Write a SQL query for loading the requested inventory data and use the `run_query` tool to execute your query.
-
-
 """
 
-inventory_agent = Agent(
-    name="inventory_agent",
-    model=config.MODEL_NAME,
-    instruction=INVENTORY_SYSTEM_PROMPT,
-    tools=[db_tools.explore_schema, db_tools.run_query],
-)
+def create_agent():
+   """
+   Factory function to create the inventory agent.
+   """
+   return Agent(
+      name="inventory_agent",
+      model=config.MODEL_NAME,
+      instruction=INVENTORY_SYSTEM_PROMPT,
+      description="Agent for finding inventory information in the legacy database.",
+      tools=[db_tools.explore_schema, db_tools.run_query],
+      output_key="inventory_agent_result",
+   )

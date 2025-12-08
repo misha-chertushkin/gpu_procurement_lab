@@ -12,21 +12,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from google.adk.agents import Agent
-from assets.tools.api import LogisticsTools
-from assets.config import config
-
-# Initialize tools
-api_tools = LogisticsTools()
-
-LOGISTICS_SYSTEM_PROMPT = """
-You are the Logistics Manager.
-Your goal is to find real-time pricing and shipping estimates from the external market.
-"""
-
-logistics_agent = Agent(
-    name="logistics_agent",
-    model=config.MODEL_NAME,
-    instruction=LOGISTICS_SYSTEM_PROMPT,
-    tools=[api_tools.fetch_spot_prices, api_tools.estimate_shipping],
-)
