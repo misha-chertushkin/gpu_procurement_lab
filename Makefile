@@ -159,9 +159,9 @@ venv: $(VENV_TIMESTAMP)
 
 
 # Install dependencies
-$(INSTALL_TIMESTAMP): $(VENV_TIMESTAMP) pyproject.toml
+$(INSTALL_TIMESTAMP): $(VENV_TIMESTAMP) assets/pyproject.toml
 	@echo "🐍 Upgrading Python Dependencies in $(VENV)..."
-	${PIP} install -e .
+	${PIP} install -e assets
 	touch $(INSTALL_TIMESTAMP)
 
 .PHONY: install
@@ -170,7 +170,7 @@ install: $(INSTALL_TIMESTAMP)
 
 # Run a phase demo
 .PHONY: run
-run: hydrate
+run: $(HYDRATE_TIMESTAMP)
 ifndef lab
 	$(error lab is not set! e.g., make run lab=phase1)
 endif
@@ -180,7 +180,7 @@ endif
 
 # Run a phase test
 .PHONY: test
-test: hydrate
+test: $(HYDRATE_TIMESTAMP)
 ifndef lab
 	$(error lab is not set! e.g., make test lab=phase1)
 endif
@@ -191,7 +191,7 @@ endif
 
 # Run a command in each lab
 .PHONY: batch-test
-batch-test:
+batch-test: $(HYDRATE_TIMESTAMP)
 ifndef count
 	$(error count is not set! e.g., make batch-test count=1)
 endif
@@ -215,21 +215,21 @@ test-summary:
 # Clean the Environment
 .PHONY: clean
 clean:
-ifndef phase
-	@echo "🗑️  Executing Clean for ALL Phases"
+ifndef lab
+	@echo "🗑️  Executing Clean for ALL Lab Phases"
 	rm -rf $(VENV) $(BUILD)
 	find . -type d -name "build" -exec rm -rf {} +
 #	find . -type d -name ".terraform" -exec rm -rf {} +
 #	find . -name ".terraform.*" -exec rm -f {} +
-	find . -name "terraform.tfstate*" -exec rm -f {} +
+#	find . -name "terraform.tfstate*" -exec rm -f {} +
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	find . -type d -name ".ruff_cache" -exec rm -rf {} +
 	find . -type d -name "*.egg-info" -exec rm -rf {} +
 	find . -name ".coverage" -exec rm -f {} +
 else
-	@echo "🗑️  Executing Clean for Phase $(phase)"
-	make -C labs/$(phase) clean
+	@echo "🗑️  Executing Clean for labs/$(lab)"
+	make -C labs/$(lab) clean
 endif
 
 
