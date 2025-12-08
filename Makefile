@@ -182,7 +182,7 @@ endif
 .PHONY: test
 test: hydrate
 ifndef lab
-	$(error phase is not set! e.g., make test lab=phase1)
+	$(error lab is not set! e.g., make test lab=phase1)
 endif
 	@echo "🔍 Executing Unit Tests for Phase $(lab)"
 	make -C labs/$(lab) install
