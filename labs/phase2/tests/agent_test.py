@@ -42,61 +42,6 @@ logging.getLogger("google_adk").setLevel(logging.DEBUG)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
-# --- BEGIN MONKEY PATCH ---
-async def _merge_agent_run_patched(
-    agent_runs: list[AsyncGenerator[Event, None]],
-) -> AsyncGenerator[Event, None]:
-    """Merges the agent run event generator.
-
-    This implementation guarantees for each agent, it won't move on until the
-    generated event is processed by upstream runner.
-
-    Args:
-        agent_runs: A list of async generators that yield events from each agent.
-
-    Yields:
-        Event: The next event from the merged generator.
-    """
-    sentinel = object()
-    queue = asyncio.Queue()
-
-    # Agents are processed in parallel.
-    # Events for each agent are put on queue sequentially.
-    async def process_an_agent(events_for_one_agent):
-        try:
-            async for event in events_for_one_agent:
-                resume_signal = asyncio.Event()
-                await queue.put((event, resume_signal))
-                # Wait for upstream to consume event before generating new events.
-                await resume_signal.wait()
-        finally:
-            # Mark agent as finished.
-            await queue.put((sentinel, None))
-
-    async with asyncio.TaskGroup() as tg:
-        for events_for_one_agent in agent_runs:
-            tg.create_task(process_an_agent(events_for_one_agent))
-
-        sentinel_count = 0
-        # Run until all agents finished processing.
-        try:
-            while sentinel_count < len(agent_runs):
-                event, resume_signal = await queue.get()
-                # Agent finished processing.
-                if event is sentinel:
-                    sentinel_count += 1
-                else:
-                    yield event
-                    # Signal to agent that it should generate next event.
-                    resume_signal.set()
-        except GeneratorExit:
-            pass # Gracefully exit when the generator is closed.
-
-
-parallel_agent._merge_agent_run = _merge_agent_run_patched
-# --- END MONKEY PATCH ---
-
-
 load_dotenv()
 
 
@@ -195,5 +140,11 @@ def test_run(prompt, run_number):
         location=LOCATION,
     )
 
-    asyncio.run(call_agent_async(prompt))
+    loop = asyncio.get_event_loop()
+    try:
+        loop.run_until_complete(call_agent_async(prompt))
+        # Allow background tasks to complete their shutdown.
+        loop.run_until_complete(asyncio.sleep(0))
+    finally:
+        loop.close()
     
