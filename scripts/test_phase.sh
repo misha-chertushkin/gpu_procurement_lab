@@ -38,7 +38,7 @@ NC='\033[0m' # No Color
 
 source $VENV_DIR/bin/activate
 
-echo -e "${BLUE}🚀 Running Vertex AI L400 Lab 2 Test for Phase $PHASE...${NC}"
+echo -e "${BLUE}🚀 Running Vertex AI L400 Lab 2 Test for $PHASE...${NC}"
 
 # --- Step 1: The External World (Mock API) ---
 echo -e "\n${BLUE}[1/2] Launching Mock Spot Market API...${NC}"
@@ -56,20 +56,15 @@ echo "✅ API running in background (PID: $API_PID). Logs at ./logs/api_logs.txt
 echo "   Waiting 5 seconds for API to warm up..."
 sleep 5
 
-# --- Step 2: The War Room (Agents) ---
-echo -e "\n${BLUE}[2/2] 🛡️ INITIALIZING INCIDENT COMMAND WAR ROOM...${NC}"
+# --- Step 2: Unit Test (Agents) ---
+echo -e "\n${BLUE}[2/2] 🛡️ Launching Unit Test...${NC}"
 echo "---------------------------------------------------------------"
-
-
-# [Image of multi-agent system architecture]
-
 
 # Run the main agent loop
 python -m pytest -v -s --log-cli-level=INFO -W "ignore::DeprecationWarning" $PHASE_DIR/tests --junitxml=$PHASE_DIR/build/latest-test-results.xml 2>&1 | tee $PHASE_DIR/build/latest-test-results.log
 
 # --- Cleanup ---
 echo -e "\n${BLUE}🧹 Cleaning up...${NC}"
-#kill $API_PID
 fuser -k $API_PORT/tcp > /dev/null 2>&1
 echo "✅ Mock API stopped."
 echo -e "${GREEN}🏁 Demo Complete.${NC}"
