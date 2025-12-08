@@ -15,13 +15,13 @@
 # Define locals
 locals {
   scripts_dir = "${path.root}/../scripts/"
-  logs_dir = "${path.root}/../logs/"
   workspace_dir = "${path.root}/../workspace/"
+  logs_dir = "${path.root}/../workspace/logs/"
 
   dir_paths = {
     "scripts" = local.scripts_dir,
-    "logs" = local.logs_dir,
     "workspace" = local.workspace_dir,
+    "logs" = local.logs_dir,
   }
 
   file_templates = {

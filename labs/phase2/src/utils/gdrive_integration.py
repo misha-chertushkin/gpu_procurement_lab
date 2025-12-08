@@ -41,7 +41,7 @@ class ReportGenerator:
                                       If None, uploads to the root of "My Drive".
         """
         self.folder_id = folder_id
-        self.sync_dir = "./gdrive_sync"  # Local backup directory
+        self.sync_dir = "./workspace/gdrive_sync"  # Local backup directory
         os.makedirs(self.sync_dir, exist_ok=True)
         self._service = None
 
