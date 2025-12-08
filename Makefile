@@ -175,8 +175,7 @@ ifndef lab
 	$(error lab is not set! e.g., make run lab=phase1)
 endif
 	@echo "🚀 Starting Local Test Agent for Lab $(lab)"
-	make -C labs/$(lab) install
-	scripts/run_phase.sh $(lab)
+	make -C labs/$(lab) run
 
 # Run a phase test
 .PHONY: test
@@ -185,8 +184,7 @@ ifndef lab
 	$(error lab is not set! e.g., make test lab=phase1)
 endif
 	@echo "🔍 Executing Unit Tests for Phase $(lab)"
-	make -C labs/$(lab) install
-	scripts/test_phase.sh $(lab)
+	make -C labs/$(lab) test
 
 
 # Run a command in each lab
@@ -198,8 +196,7 @@ endif
 	@for lab in $(LABS); do \
 		if [ -d "$$lab" ] && [ "$${lab##*/}" != "labs" ]; then \
 			echo "🔍 Executing Unit Tests for $$lab"; \
-			make -C $$lab install; \
-			bash -c ". scripts/base_env.sh && export TEST_COUNT=$(count) && scripts/test_phase.sh $${lab##*/}"; \
+			make -C $$lab test; \
 		fi \
 	done
 

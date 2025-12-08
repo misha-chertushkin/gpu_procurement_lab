@@ -29,9 +29,6 @@ VENV = venv
 BUILD = build
 PYTHON = $(VENV)/bin/python
 PIP = $(VENV)/bin/pip
-RUFF = $(VENV)/bin/ruff
-SPHINX = $(VENV)/bin/sphinx
-COVERAGE = $(VENV)/bin/coverage
 
 
 # Define Timestamped Files
@@ -71,15 +68,22 @@ $(INSTALL_TIMESTAMP): $(VENV_TIMESTAMP) pyproject.toml
 install: $(INSTALL_TIMESTAMP)
 
 
-# Install all dependencies
-.PHONY: install-all
-install-all: install
-
-
 # Upgrade Dependencies
 .PHONY: upgrade
 upgrade: $(VENV_TIMESTAMP) upgrade-pip
 	${PIP} install --upgrade -e .
+
+
+# Run and Test
+.PHONY: run
+run: $(INSTALL_TIMESTAMP)
+	./scripts/run.sh
+
+
+.PHONY: test
+test: $(INSTALL_TIMESTAMP)
+	./scripts/test.sh
+
 
 # Clean Environment
 .PHONY: clean
@@ -96,25 +100,11 @@ clean:
 .PHONY: help
 help:
 	@echo "Usage:"
-	@echo "  make docs                 - Create doc documentation"
 	@echo "  make venv                 - Create virtual environment"
 	@echo "  make install              - Install runtime dependencies"
-	@echo "  make install-dev          - Install test and development dependencies"
-	@echo "  make install-docs         - Install documentation dependencies"
-	@echo "  make install-all          - Install all dependencies"
-	@echo "  make run                  - Interactive - Run an ADK Agent local development test instance with all environment variables and secrets"
-	@echo "  make run-adk-background   - Non-interactive - Start an ADK Agent local development test instance with all environment variables and secrets"
-	@echo "  make stop-adk-background  - Non-interactive - Stop an ADK Agent local development test instance that's running in the background"
-	@echo "  make deploy               - Deploy ADK Agent to Agent Engine"
-	@echo "  make update-branch        - Refreshes remote Git branches into workspace"
+	@echo "  make run                  - Run the demo in the foreground"
+	@echo "  make test                 - Run the demo unit tests"
 	@echo "  make upgrade              - Install upgraded runtime dependencies"
 	@echo "  make upgrade-pip          - Install upgraded runtime dependencies"
-	@echo "  make tests                - Run tests"
-	@echo "  make coverage             - Run tests and code coverage"
-	@echo "  make lint                 - Run linting"
-	@echo "  make format               - Run code formatting"
-	@echo "  make get-sa               - Fetch the service account associated with the environment"
-	@echo "  make add-license          - Applies the Google LLC Apache-2.0 license to all applicable files"
-	@echo "  make readme-toc           - Output a generated TOC from the repository README.md"
 	@echo "  make clean                - Clean environment"
 	@echo "  make help                 - Show help"
