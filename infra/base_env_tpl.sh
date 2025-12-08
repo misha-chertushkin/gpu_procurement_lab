@@ -18,6 +18,7 @@ export LOCATION=${location}
 export GOOGLE_CLOUD_REGION=${location}
 export GCS_BUCKET_NAME=${gcs_bucket_name}
 export A2A_CARD_BUCKET_NAME=${a2a_card_bucket_name}
+export A2A_CARD_BUCKET_URI=gs://${a2a_card_bucket_name}
 
 export GOOGLE_GENAI_USE_VERTEXAI="1"
 export GOOGLE_CLOUD_PROJECT=${project_id}
