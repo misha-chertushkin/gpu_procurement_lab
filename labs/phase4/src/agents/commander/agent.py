@@ -58,7 +58,7 @@ CRITICAL TERMINATION RULES:
 
 def create_agent():
     return Agent(
-        name="root_agent",
+        name="commander_agent",
         model=config.MODEL_NAME,
         instruction=COMMANDER_SYSTEM_PROMPT,
         sub_agents=[create_agent_source_gpus_agent()],

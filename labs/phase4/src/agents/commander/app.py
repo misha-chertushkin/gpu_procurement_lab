@@ -19,15 +19,15 @@ import logging
 from google.adk.a2a.utils.agent_to_a2a import to_a2a
 from google.adk.a2a.utils.agent_card_builder import AgentCardBuilder
 
-from agents.commander.agent import create_agent
+from .agent import create_agent
 from assets.utils.agents import build_and_publish_agent_card
 
 
 load_dotenv()
 
 
-project_id = os.getenv('GCP_PROJECT', 'unset')
-location = os.getenv('GCP_REGION', 'unset')
+project_id = os.getenv('PROJECT_ID', 'unset')
+location = os.getenv('LOCATION', 'unset')
 service_port = int(os.getenv('LOCAL_SERVICE_PORT', '8081'))
 gcs_a2a_bucket = os.getenv('AGENT_CARD_BUCKET_URI', 'unset')
 
@@ -45,7 +45,7 @@ a2a_card = None
 root_agent = create_agent()
 
 
-app = to_a2a(agent=root_agent, host=host, port=port, protocol="https")
+app = to_a2a(agent=root_agent, host=host, port=port, protocol="http")
 @app.on_event("startup")
 async def lifespan_startup():
     """Builds the agent card and stores it in a global variable on startup."""
@@ -64,4 +64,4 @@ async def lifespan_startup():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(app, host="0.0.0.0", port=service_port)

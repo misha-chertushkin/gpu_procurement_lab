@@ -36,11 +36,8 @@ def create_agent():
     """
     Factory function to create the root agent.
     """
-    agent_cards = retrieve_agent_cards()
-    remote_agents = get_remote_agents(agent_cards=agent_cards)
+    remote_agents = get_remote_agents(agent_cards=retrieve_agent_cards())
     log.info(f"Remote agents: {remote_agents}")
-
-    all_agents = remote_agents
 
     # Dynamically construct the description and instructions from remote agents
     instructions = [
@@ -50,7 +47,7 @@ def create_agent():
         "Sub-Agents:\n\n",
     ]
 
-    for i, agent in enumerate(all_agents):
+    for i, agent in enumerate(remote_agents):
         instructions.append(
             f"{i+1}. **{agent.name}**: Use this agent when you need: {agent.description}.\n"
         )
@@ -64,5 +61,5 @@ def create_agent():
             "A helpful AI agent that orchestrates and executes tasks across its sub-agents"
         ),
         instruction=instruction,
-        sub_agents=[*all_agents],
+        sub_agents=[*remote_agents],
     )
