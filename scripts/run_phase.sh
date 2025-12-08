@@ -63,9 +63,6 @@ echo -e "\n${BLUE}[2/2] 🛡️ Launching ADK Web UI...${NC}"
 echo "---------------------------------------------------------------"
 
 
-# [Image of multi-agent system architecture]
-
-
 # Run the main agent loop
 cd "$PHASE_DIR/src/agents"
 adk web
