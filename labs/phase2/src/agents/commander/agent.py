@@ -19,11 +19,11 @@ from agents.legal.agent import legal_agent
 from agents.logistics.agent import logistics_agent
 from agents.purchase_order.agent import purchase_order_agent
 from assets.tools.file_system import FileSystemTools
-from assets.tools.gdrive_integration import ReportGenerator
+from assets.tools.gdrive_integration import GoogleDrive
 from assets.config import config
 
 tools = FileSystemTools(root_dir="./workspace")
-reporter = ReportGenerator()
+gdrive = GoogleDrive()
 
 COMMANDER_SYSTEM_PROMPT = """
 You are the Incident Commander for a critical supply chain crisis.
@@ -71,6 +71,6 @@ root_agent = Agent(
         tools.append_to_log,
         tools.list_files,
         # Reporting
-        reporter.upload_report,
+        gdrive.upload_file,
     ],
 )

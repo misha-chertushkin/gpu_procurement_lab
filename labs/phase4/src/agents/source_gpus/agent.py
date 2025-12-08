@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 from google.adk.agents import Agent, SequentialAgent, ParallelAgent
 from google.adk.tools.tool_context import ToolContext
 from assets.tools.file_system import FileSystemTools
-from assets.tools.gdrive_integration import ReportGenerator
+from assets.tools.gdrive_integration import GoogleDrive
 from assets.config import config
 from agents.inventory.agent import create_agent as create_inventory_agent
 from agents.legal.agent import create_agent as create_legal_agent
@@ -27,7 +27,7 @@ load_dotenv()
 
 
 fs_tools = FileSystemTools(root_dir="./workspace")
-reporter = ReportGenerator()
+gdrive = GoogleDrive()
 
 def source_gpus_merge_results(tool_context: ToolContext):
     """Return the aggregate sub-agent information."""
@@ -94,7 +94,7 @@ def create_agent():
             fs_tools.write_file,
             fs_tools.append_to_log,
             fs_tools.list_files,
-            reporter.upload_report,
+            gdrive.upload_file,
         ]
     )
 

@@ -64,7 +64,7 @@ After fixing authentication, test it:
 python -c "
 from utils.gdrive_integration import ReportGenerator
 reporter = ReportGenerator()
-result = reporter.upload_report('test.md', '# Test\nThis is a test.')
+result = gdrive.upload_file('test.md', '# Test\nThis is a test.')
 print(result)
 "
 ```

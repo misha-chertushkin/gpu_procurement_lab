@@ -25,7 +25,7 @@ from googleapiclient.http import MediaIoBaseUpload
 logger = logging.getLogger(__name__)
 
 
-class ReportGenerator:
+class GoogleDrive:
     """
     Handles uploading reports to Google Drive.
     Uses Application Default Credentials (ADC) for authentication.
@@ -66,17 +66,17 @@ class ReportGenerator:
             logger.error(f"Failed to authenticate with Google Drive: {e}")
             raise
 
-    def upload_report(self, filename: str, content: str, metadata: Dict = None) -> str:
+    def upload_file(self, filename: str, content: str, metadata: Dict = None) -> str:
         """
-        Uploads the Executive Report to Google Drive.
+        Uploads the provided file to Google Drive.
 
         Args:
-            filename (str): The name of the report file.
-            content (str): The full text/markdown content of the report.
-            metadata (Dict): Additional metadata (e.g., agent version).
+            filename (str): The name of the file that should be uploaded.
+            content (str): The full plain text content of the file.
+            metadata (Dict): Optional metadata (e.g., agent version).
 
         Returns:
-            str: Success message with file ID or error message.
+            str: Success message with file ID or an error message.
         """
         # Save a local backup first
         try:
@@ -149,55 +149,3 @@ class ReportGenerator:
                 f"FAILURE: Could not upload report ({str(e)})\n"
                 f"  - Local backup available at: {local_path}"
             )
-        
-    def list_reports(self, max_results: int = 10) -> list:
-        """
-        List recent reports uploaded to Google Drive.
-
-        Args:
-            max_results (int): Maximum number of files to return.
-
-        Returns:
-            list: List of file metadata dictionaries.
-        """
-        try:
-            service = self._get_drive_service()
-
-            # Build query
-            query = "mimeType='text/markdown'"
-            if self.folder_id:
-                query += f" and '{self.folder_id}' in parents"
-
-            # Execute query
-            results = service.files().list(
-                q=query,
-                pageSize=max_results,
-                fields="files(id, name, createdTime, webViewLink)",
-                orderBy="createdTime desc"
-            ).execute()
-
-            files = results.get('files', [])
-            return files
-
-        except Exception as e:
-            logger.error(f"Failed to list reports: {e}")
-            return []
-
-    def delete_report(self, file_id: str) -> bool:
-        """
-        Delete a report from Google Drive.
-
-        Args:
-            file_id (str): The Google Drive file ID to delete.
-
-        Returns:
-            bool: True if successful, False otherwise.
-        """
-        try:
-            service = self._get_drive_service()
-            service.files().delete(fileId=file_id).execute()
-            logger.info(f"Successfully deleted file {file_id}")
-            return True
-        except Exception as e:
-            logger.error(f"Failed to delete file {file_id}: {e}")
-            return False
