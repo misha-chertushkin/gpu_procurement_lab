@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from google.adk import Agent
+from google.adk.agents import Agent
 from google.adk.tools import AgentTool
 from agents.inventory.agent import inventory_agent
 from agents.legal.agent import legal_agent

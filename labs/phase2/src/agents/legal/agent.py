@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from google.adk import Agent
+from google.adk.agents import Agent
 from tools.contract_analyzer import ContractAnalyzer
 from utils.config import config
 
@@ -30,6 +30,7 @@ CRITICAL RULES:
 1. You NEVER read whole documents. You use 'analyze_contract_clause' to fetch specific sections.
 2. You are looking for 'Exclusivity' clauses (restrictions) and 'Force Majeure' clauses (exceptions).
 3. Interpret 'HOLD_LEGAL' status codes based on contract definitions.
+4. Summarize your findings.
 """
 
 def create_agent():
@@ -39,6 +40,9 @@ def create_agent():
     return Agent(
         name="legal_agent",
         model=config.MODEL_NAME,
+        description=(
+            "An agent that interprets vendor contracts to find allowable exceptions for procurement."
+        ),
         instruction=LEGAL_SYSTEM_PROMPT,
         tools=[rag_tools.analyze_contract_clause],
         output_key="legal_agent_result",

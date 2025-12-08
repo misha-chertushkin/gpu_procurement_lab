@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from google.adk import Agent
+from google.adk.agents import Agent
 from tools.file_system import FileSystemTools
 from utils.gdrive_integration import ReportGenerator
 from utils.config import config

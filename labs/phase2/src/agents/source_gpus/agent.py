@@ -50,7 +50,10 @@ def create_agent():
     )
 
     source_gpus_merge_agent = Agent(
-        name="source_gpus_merge_agent",
+        name="source_gpus_sum_and_report_agent",
+        description=(
+            "Consolidate information from DATA INPUTS into a CSV 'procurement_tracker.csv', then create and upload a report."
+        ),
         model=config.MODEL_NAME,
         instruction="""
     Your Goal: Consolidate information from DATA INPUTS into a CSV 'procurement_tracker.csv', then create and upload a report.
