@@ -199,7 +199,7 @@ endif
 		if [ -d "$$lab" ] && [ "$${lab##*/}" != "labs" ]; then \
 			echo "🔍 Executing Unit Tests for $$lab"; \
 			make -C $$lab install; \
-			bash -c ". scripts/base_env.sh && TEST_COUNT=$(count) && scripts/test_phase.sh $${lab##*/}"; \
+			bash -c ". scripts/base_env.sh && export TEST_COUNT=$(count) && scripts/test_phase.sh $${lab##*/}"; \
 		fi \
 	done
 
