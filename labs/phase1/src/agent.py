@@ -6,7 +6,7 @@ from assets.tools.api import LogisticsTools
 from assets.tools.database import DatabaseTools
 from assets.tools.file_system import FileSystemTools
 from assets.tools.contract_analyzer import ContractAnalyzer
-from assets.tools.gdrive_integration import ReportGenerator
+from assets.tools.gdrive_integration import GoogleDrive
 
 PROMPT = f'''
 <task>
@@ -39,12 +39,12 @@ Respond with a brief summary of your research steps and calculation. Explain eve
         2. I found [number_of_available_GPUs_in_stock] in our warehouse that are available based on [brief analysis of Master Supply Agreement]
         3. The remaining [number_of_GPUs_] GPUs can be ordered on the marketplace from [vendor name] for $[total amount]K total including shipping.
         ```
-    - Use the 'write_file' tool to save the repoert to `./workspace/Executive_Report.md`.
+    - Use the 'write_file' tool to save the repoert to `workspace/Executive_Report.md`.
     - Upload the report to Google Drive using the `upload_report` tool. 
 5. Generate the Purchase Order in Markdown format.
     - Use information from the Executive Report generated in Step 4.
     - Generate the purchase order in Markdown format, with placeholders for information that is not available.
-    - Use the 'write_file' tool to save the purchase order to `./workspace/Purchase_Order.md`.
+    - Use the 'write_file' tool to save the purchase order to `workspace/Purchase_Order.md`.
     - Upload purchase to Google Drive using the `upload_report` tool. 
     - The purchase order must have the following structure:
         ```
@@ -69,7 +69,7 @@ def run_agent(number_of_gpus: int) -> None:
     database = DatabaseTools()
     filesystem = FileSystemTools()
     contract = ContractAnalyzer()
-    report_uploader = ReportGenerator()
+    google_drive = GoogleDrive()
     prompt = [types.Content(role="user", parts=[types.Part(text=PROMPT.replace('[number_of_gpus]', str(number_of_gpus)))])]
     trajectory = []
     while True:
@@ -88,7 +88,7 @@ def run_agent(number_of_gpus: int) -> None:
                     filesystem.append_to_log,
                     filesystem.list_files,
                     contract.analyze_contract_clause,
-                    report_uploader.upload_report
+                    google_drive.upload_file
                 ],
                 tool_config=types.ToolConfig(function_calling_config=types.FunctionCallingConfig(mode=types.FunctionCallingConfigMode.VALIDATED)),
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True)
@@ -116,7 +116,7 @@ def run_agent(number_of_gpus: int) -> None:
                 case 'append_to_log': result = filesystem.append_to_log(args['filename'], args['content'])
                 case 'list_files': result = filesystem.list_files()
                 case 'analyze_contract_clause': result = contract.analyze_contract_clause(args['doc_name'], args['clause_type'])
-                case 'upload_report': result = report_uploader.upload_report(args['filename'], args['content'], args['metadata'])
+                case 'upload_report': result = google_drive.upload_file(args['filename'], args['content'], args['metadata'])
                 case _: raise ValueError(f"Unrecognized function_call.name: {fc_part.function_call.name}")
             function_responses.append(types.Part.from_function_response(name=fc_part.function_call.name, response={'result': result}))
         prompt.append(types.Content(role="tool", parts=function_responses))

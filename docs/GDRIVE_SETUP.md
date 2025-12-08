@@ -81,7 +81,7 @@ from utils.gdrive_integration import ReportGenerator
 reporter = ReportGenerator()
 
 # Upload a report
-result = reporter.upload_report(
+result = gdrive.upload_file(
     filename="my_report.md",
     content="# Report Content\n\nThis is my report.",
     metadata={"version": "1.0", "author": "agent"}
@@ -97,7 +97,7 @@ print(result)
 reporter = ReportGenerator(folder_id="YOUR_FOLDER_ID_HERE")
 
 # Upload to that folder
-result = reporter.upload_report(
+result = gdrive.upload_file(
     filename="report.md",
     content="Content here"
 )
@@ -158,7 +158,7 @@ The implementation includes robust error handling:
 Example error handling:
 
 ```python
-result = reporter.upload_report("report.md", "Content")
+result = gdrive.upload_file("report.md", "Content")
 
 if "SUCCESS" in result:
     print("✓ Uploaded to Google Drive")
@@ -212,7 +212,7 @@ from utils.gdrive_integration import ReportGenerator
 reporter = ReportGenerator()
 
 # Agent will call this
-result = reporter.upload_report(
+result = gdrive.upload_file(
     filename="H100_Procurement_Report.md",
     content=final_report,
     metadata={"version": "1.0", "agent": "root_agent"}
@@ -227,7 +227,7 @@ To test the integration:
 python -c "
 from utils.gdrive_integration import ReportGenerator
 reporter = ReportGenerator()
-result = reporter.upload_report('test.md', '# Test\nThis is a test.')
+result = gdrive.upload_file('test.md', '# Test\nThis is a test.')
 print(result)
 "
 ```

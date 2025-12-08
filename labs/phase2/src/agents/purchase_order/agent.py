@@ -14,11 +14,11 @@
 
 from google.adk.agents import Agent
 from assets.tools.file_system import FileSystemTools
-from assets.tools.gdrive_integration import ReportGenerator
+from assets.tools.gdrive_integration import GoogleDrive
 from assets.config import config
 
 fs_tools = FileSystemTools(root_dir="./workspace")
-uploader = ReportGenerator()
+gdrive = GoogleDrive()
 
 PURCHASE_ORDER_SYSTEM_PROMPT = """
 You are the Purchase Order Agent.
@@ -67,6 +67,6 @@ purchase_order_agent = Agent(
     tools=[
         fs_tools.read_file,
         fs_tools.write_file,
-        uploader.upload_report,
+        gdrive.upload_file,
     ],
 )

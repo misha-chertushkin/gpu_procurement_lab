@@ -86,11 +86,11 @@ graph TD
         end
 
         subgraph "Tools"
-            CommanderTools_P1["fs.read_file, fs.write_file, fs.append_to_log, fs.list_files, reporter.upload_report"];
+            CommanderTools_P1["fs.read_file, fs.write_file, fs.append_to_log, fs.list_files, gdrive.upload_file"];
             InventoryTools_P1["db.explore_schema, db.run_query"];
             LegalTools_P1["rag.analyze_contract_clause"];
             LogisticsTools_P1["api.fetch_spot_prices, api.estimate_shipping"];
-            PurchaseOrderTools_P1["fs.read_file, fs.write_file, reporter.upload_report"];
+            PurchaseOrderTools_P1["fs.read_file, fs.write_file, gdrive.upload_file"];
         end
 
         root_agent_P1 --> inventory_agent_P1;
@@ -126,7 +126,7 @@ graph TD
         end
 
         subgraph "Tools"
-            MergeTools_P2["fs.read_file, fs.write_file, fs.append_to_log, fs.list_files, reporter.upload_report"];
+            MergeTools_P2["fs.read_file, fs.write_file, fs.append_to_log, fs.list_files, gdrive.upload_file"];
             InventoryTools_P2["db.explore_schema, db.run_query"];
             LegalTools_P2["rag.analyze_contract_clause"];
             LogisticsTools_P2["api.fetch_spot_prices, api.estimate_shipping"];
