@@ -15,7 +15,7 @@
 CREATE OR REPLACE TABLE `gpu_procurement_db.LEGACY_INV_MAIN_V2`
 (
     ITEM_REF_ID STRING OPTIONS(description="Internal Product Reference ID (Non-Standard)"),
-    LOC_BIN_HEX STRING OPTIONS(description="Warehouse Bin Location (Hex encoded). A1=Shipping, 55=Quarantine"),
+    LOC_BIN_HEX STRING OPTIONS(description="Warehouse Bin Location (Hex encoded). A1=Shipping, 55=Quarantine, B2=Lost"),
     QOH_RAW_VAL INT64 OPTIONS(description="Quantity on Hand (Raw Value)"),
     LAST_TOUCH_DT_UNIX INT64 OPTIONS(description="Last movement timestamp in Unix Epoch"),
     STATUS_FLAG_9 INT64 OPTIONS(description="Inventory Status: 0=OK, 1=Reserved, 9=Legal Hold")
@@ -23,7 +23,7 @@ CREATE OR REPLACE TABLE `gpu_procurement_db.LEGACY_INV_MAIN_V2`
 
 -- SEED DATA TODO: remove GPU type from ID values (H100, A100, RTX4090) - the model might cheat
 
--- 1. The "Decoy" H100 records (Standard Shipping Bin A1)
+-- 1. Distractor H100 records (Standard Shipping Bin A1)
 -- Shows 0 stock in attempt to confuse the agent.
 INSERT INTO `gpu_procurement_db.LEGACY_INV_MAIN_V2` VALUES ('REF_H100_XIE', 'A1', 0, 1700000000, 0);
 
