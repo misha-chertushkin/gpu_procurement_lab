@@ -30,11 +30,18 @@ variable "dataset_id" {
 }
 
 variable "gcs_bucket_name" {
-  description = "GCS Bucket Name"
+  description = "Legal Contract GCS Bucket Name"
+  type        = string
+  default     = "unset"
+}
+
+variable "a2a_card_bucket_name" {
+  description = "A2A Card GCS Bucket Name"
   type        = string
   default     = "unset"
 }
 
 locals {
   final_gcs_bucket_name = var.gcs_bucket_name != "unset" ? var.gcs_bucket_name : "${var.project_id}-gpu-procurement-docs"
+  final_a2a_card_bucket_name = var.a2a_card_bucket_name != "unset" ? var.a2a_card_bucket_name : "${var.project_id}-gpu-procurement-a2a-cards"
 }

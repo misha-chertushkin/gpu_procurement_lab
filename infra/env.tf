@@ -27,9 +27,10 @@ locals {
   file_templates = {
     "base_env.sh" = {
       template = templatefile("${path.module}/base_env_tpl.sh", {
-        project_id      = var.project_id,
-        location        = var.region,
-        gcs_bucket_name = local.final_gcs_bucket_name,
+        project_id           = var.project_id,
+        location             = var.region,
+        gcs_bucket_name      = local.final_gcs_bucket_name,
+        a2a_card_bucket_name = local.final_a2a_card_bucket_name,
       })
       output_file_path = "${local.scripts_dir}/base_env.sh"
       permissions      = "0755"

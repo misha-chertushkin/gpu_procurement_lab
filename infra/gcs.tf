@@ -20,7 +20,7 @@ data "google_project" "main_project" {
   project_id = var.project_id
 }
 
-# Create GCS Bucket
+# Create Legal Contract GCS Bucket
 resource "google_storage_bucket" "gcs_bucket" {
   depends_on = [
     google_project_service.storage_api,
@@ -43,4 +43,15 @@ resource "google_storage_bucket_iam_member" "vertex_legal_bucket_viewer" {
   bucket = local.final_gcs_bucket_name
   role   = "roles/storage.objectViewer"
   member = "serviceAccount:service-${data.google_project.main_project.number}@gcp-sa-aiplatform.iam.gserviceaccount.com"
+}
+
+# Create A2A Card GCS Bucket
+resource "google_storage_bucket" "a2a_card_bucket" {
+  depends_on = [
+    google_project_service.storage_api,
+  ]
+  name                        = local.final_a2a_card_bucket_name
+  location                    = var.region
+  uniform_bucket_level_access = true
+  force_destroy               = true
 }
