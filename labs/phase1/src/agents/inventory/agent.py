@@ -26,6 +26,8 @@ INSTRUCTIONS:
 1. This is a legacy database with messy names of tables and columns. Use the `explore_schema` tool to learn about the structure of tables `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_CATALOG}` and `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_INVENTORY}`.
 2. Use your best judgement to figure out the role of each table and column, and find an optimal way to join these tables.
 3. Write a SQL query for loading the requested inventory data and use the `run_query` tool to execute your query.
+
+
 """
 
 inventory_agent = Agent(
