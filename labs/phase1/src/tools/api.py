@@ -15,6 +15,10 @@
 import requests
 from typing import Dict, Any
 from utils.config import config
+import logging
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
 
 
 class LogisticsTools:
@@ -26,13 +30,15 @@ class LogisticsTools:
         Checks the spot market price for a specific chip.
         Endpoint: GET /v1/market/spot?chip=H100 [cite: 97]
         """
+        url = f"{self.base_url}/v1/market/spot"
+        log.info(f"[🔧 fetch_spot_prices] Checking spot prices for chip {chip_type}: {url}")
         try:
-            response = requests.get(
-                f"{self.base_url}/v1/market/spot", params={"chip": chip_type}
-            )
+            response = requests.get(url, params={"chip": chip_type})
             response.raise_for_status()
+            log.info("[✅ fetch_spot_prices] Success")
             return response.json()
         except requests.RequestException as e:
+            log.error(f"[❌ fetch_spot_prices] Market API unreachable: {str(e)}")
             return {"error": f"Market API unreachable: {str(e)}"}
 
     def estimate_shipping(self, origin: str, destination: str = "US") -> Dict[str, Any]:
@@ -40,12 +46,16 @@ class LogisticsTools:
         Gets shipping estimates.
         Endpoint: GET /v1/shipping/estimate?origin=TW&dest=US [cite: 99]
         """
+        url = f"{self.base_url}/v1/shipping/estimate"
+        log.info(f"[🔧 estimate_shipping] Estimating shipping: {url}")
         try:
             response = requests.get(
-                f"{self.base_url}/v1/shipping/estimate",
+                url,
                 params={"origin": origin, "dest": destination},
             )
             response.raise_for_status()
+            log.info("[✅ estimate_shipping] Success")
             return response.json()
         except requests.RequestException as e:
+            log.error(f"[❌ estimate_shipping] Shipping API unreachable: {str(e)}")
             return {"error": f"Shipping API unreachable: {str(e)}"}

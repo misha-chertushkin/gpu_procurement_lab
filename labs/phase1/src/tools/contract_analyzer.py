@@ -15,11 +15,10 @@
 from google import genai
 from google.genai.types import Part, GenerateContentResponse
 from utils.config import config
-
 import logging
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 class ContractAnalyzer:
     def __init__(self):
@@ -51,13 +50,19 @@ class ContractAnalyzer:
         """
 
         try:
-            # Loading the file as a Part for multimodal processing
+            log.info(f"[🔧 analyze_contract_clause] Reviewing Contract Clauses for GCS URI: {gcs_uri}")
             document = Part.from_uri(file_uri=gcs_uri, mime_type="application/pdf")
             response: GenerateContentResponse = self.client.models.generate_content(
                 model=config.MODEL_NAME,
                 contents=[document, prompt],
             )
+            if not response.text:
+                log.error("[❌ analyze_contract_clause] Empty contract analysis.  Something went wrong.")
+                return "Empty contract analysis.  Something went wrong."
+            
+            log_text = response.text.replace('\n', ' ')
+            log.info(f"[✅ analyze_contract_clause] Success: {log_text}")
             return response.text
         except Exception as e:
-            logger.error(f"Error analyzing contract: {str(e)}")
+            log.error(f"[❌ analyze_contract_clause] Error analyzing contract: {str(e)}")
             return f"Error analyzing contract: {str(e)}"
