@@ -11,9 +11,10 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "google-cloud-aiplatform",
+    "google-cloud-aiplatform[adk]",
     "google-cloud-bigquery",
     "google-cloud-storage",
+    "google-genai",
     "pandas",
     "pydantic",
     "pytest",
@@ -24,7 +25,7 @@ dependencies = [
     # otherwise it might need to be installed separately.
     "google-cloud-bigquery>=3.10.0",
     "google-cloud-storage>=2.14.0",
-    "google-adk",
+    "google-adk[a2a]",
     "python-dotenv",
     "google-cloud-secret-manager",
     "google-auth",
