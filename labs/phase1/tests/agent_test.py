@@ -136,4 +136,10 @@ def test_run(prompt, run_number):
         location=LOCATION,
     )
 
-    asyncio.run(call_agent_async(prompt))
+    # Handle loop with task shutdown delay
+    loop = asyncio.get_event_loop()
+    try:
+        loop.run_until_complete(call_agent_async(prompt))
+        loop.run_until_complete(asyncio.sleep(0))
+    finally:
+        loop.close()
