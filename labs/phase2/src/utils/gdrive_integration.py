@@ -12,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Dict, Optional
 import json
 import os
 import io
 import logging
-
 import google.auth
+from typing import Dict, Optional
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseUpload
@@ -38,7 +37,7 @@ class ReportGenerator:
 
         Args:
             folder_id (str, optional): Google Drive folder ID where reports should be uploaded.
-                                      If None, uploads to the root of "My Drive".
+            If None, uploads to the root of "My Drive".
         """
         self.folder_id = folder_id
         self.sync_dir = "./workspace/gdrive_sync"  # Local backup directory
@@ -94,7 +93,7 @@ class ReportGenerator:
         try:
             service = self._get_drive_service()
 
-            # Prepare file content with metadata
+            # Prepare file content
             full_content = content
             if metadata:
                 full_content = f"--- METADATA ---\n{json.dumps(metadata, indent=2)}\n----------------\n\n{content}"
@@ -150,7 +149,7 @@ class ReportGenerator:
                 f"FAILURE: Could not upload report ({str(e)})\n"
                 f"  - Local backup available at: {local_path}"
             )
-
+        
     def list_reports(self, max_results: int = 10) -> list:
         """
         List recent reports uploaded to Google Drive.

@@ -139,13 +139,65 @@ class ReportGenerator:
             error_msg = f"Google Drive API error: {error}"
             logger.error(error_msg)
             return (
-                f"EXCEPTION: Could not upload to Google Drive ({error})\n"
+                f"FAILURE: Could not upload to Google Drive ({error})\n"
                 f"  - Local backup available at: {local_path}"
             )
         except Exception as e:
             error_msg = f"Unexpected error during upload: {str(e)}"
             logger.error(error_msg)
             return (
-                f"EXCEPTION: Could not upload report ({str(e)})\n"
+                f"FAILURE: Could not upload report ({str(e)})\n"
                 f"  - Local backup available at: {local_path}"
             )
+        
+    def list_reports(self, max_results: int = 10) -> list:
+        """
+        List recent reports uploaded to Google Drive.
+
+        Args:
+            max_results (int): Maximum number of files to return.
+
+        Returns:
+            list: List of file metadata dictionaries.
+        """
+        try:
+            service = self._get_drive_service()
+
+            # Build query
+            query = "mimeType='text/markdown'"
+            if self.folder_id:
+                query += f" and '{self.folder_id}' in parents"
+
+            # Execute query
+            results = service.files().list(
+                q=query,
+                pageSize=max_results,
+                fields="files(id, name, createdTime, webViewLink)",
+                orderBy="createdTime desc"
+            ).execute()
+
+            files = results.get('files', [])
+            return files
+
+        except Exception as e:
+            logger.error(f"Failed to list reports: {e}")
+            return []
+
+    def delete_report(self, file_id: str) -> bool:
+        """
+        Delete a report from Google Drive.
+
+        Args:
+            file_id (str): The Google Drive file ID to delete.
+
+        Returns:
+            bool: True if successful, False otherwise.
+        """
+        try:
+            service = self._get_drive_service()
+            service.files().delete(fileId=file_id).execute()
+            logger.info(f"Successfully deleted file {file_id}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to delete file {file_id}: {e}")
+            return False
