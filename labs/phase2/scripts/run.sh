@@ -42,7 +42,7 @@ echo -e "\n${BLUE}[1/2] Launching Mock Spot Market API...${NC}"
 # Kill any existing process on port 8080 to avoid conflicts
 fuser -k $API_PORT/tcp > /dev/null 2>&1
 
-mkdir -p ../../workspace/$PHASE/logs/
+mkdir -p ../../workspace/labs/$PHASE/logs/
 
 # Start API in background
 cd ../../assets/mock_api

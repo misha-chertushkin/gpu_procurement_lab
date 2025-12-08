@@ -43,11 +43,11 @@ echo -e "\n${BLUE}[1/3] Launching Mock Spot Market API...${NC}"
 # Kill any existing process on port 8080 to avoid conflicts
 fuser -k $MOCK_API_PORT/tcp > /dev/null 2>&1
 
-mkdir -p ../../workspace/$PHASE/logs/
+mkdir -p ../../workspace/labs/$PHASE/logs/
 
 # Start API in background
 cd ../../assets/mock_api
-uvicorn main:app --host $API_HOST --port $MOCK_API_PORT > ../../workspace/labs/$PHASE/logs/latest-run-mock-api.log 2>&1 &
+python -m uvicorn main:app --host $API_HOST --port $MOCK_API_PORT > ../../workspace/labs/$PHASE/logs/latest-run-mock-api.log 2>&1 &
 API_PID=$!
 cd ../..
 
@@ -56,10 +56,10 @@ echo "   Waiting 5 seconds for API to warm up..."
 sleep 5
 
 # --- Step 2: The A2A Sub-Agent ---
-echo -e "\n${BLUE}[2/3] Launching Mock Spot Market API...${NC}"
+echo -e "\n${BLUE}[2/3] Launching A2A Sub-agent...${NC}"
 # Start A2A Sub-Agent in background
 cd ./labs/$PHASE/
-uvicorn src.agents.commander.app:app --host $API_HOST --port $A2A_SUB_AGENT_PORT > ../../workspace/labs/$PHASE/logs/latest-run-a2a-sub-agent.log 2>&1 &
+python -m uvicorn src.agents.commander.app:app --host $API_HOST --port $A2A_SUB_AGENT_PORT > ../../workspace/labs/$PHASE/logs/latest-run-a2a-sub-agent.log 2>&1 &
 API_PID=$!
 cd ../..
 
