@@ -12,19 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from google.cloud import storage
-import vertexai
-from vertexai.generative_models import GenerativeModel, Part
+from google import genai
+from google.genai.types import Part, GenerateContentResponse
 from utils.config import config
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class ContractAnalyzer:
     def __init__(self):
-        vertexai.init(project=config.PROJECT_ID, location=config.REGION)
-        self.model = GenerativeModel("gemini-3-pro-preview")
-        self.storage_client = storage.Client()
+        self.client = genai.Client(vertexai=True, project=config.PROJECT_ID, location=config.REGION)
 
-    def analyze_contract_clause(self, doc_name: str, clause_type: str) -> str:
+    async def analyze_contract_clause(self, doc_name: str, clause_type: str) -> str:
         """
         Analyzes the given legal document and extracts the specified clause.
 
@@ -51,8 +52,12 @@ class ContractAnalyzer:
 
         try:
             # Loading the file as a Part for multimodal processing
-            document = Part.from_uri(uri=gcs_uri, mime_type="application/pdf")
-            response = self.model.generate_content([document, prompt])
+            document = Part.from_uri(file_uri=gcs_uri, mime_type="application/pdf")
+            response: GenerateContentResponse = self.client.models.generate_content(
+                model=config.MODEL_NAME,
+                contents=[document, prompt],
+            )
             return response.text
         except Exception as e:
+            logger.error(f"Error analyzing contract: {str(e)}")
             return f"Error analyzing contract: {str(e)}"
