@@ -14,7 +14,7 @@
 
 from google import genai
 from google.genai.types import Part, GenerateContentResponse
-from utils.config import config
+from assets.config import config
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -24,7 +24,7 @@ class ContractAnalyzer:
     def __init__(self):
         self.client = genai.Client(vertexai=True, project=config.PROJECT_ID, location=config.REGION)
 
-    def analyze_contract_clause(self, doc_name: str, clause_type: str) -> str:
+    async def analyze_contract_clause(self, doc_name: str, clause_type: str) -> str:
         """
         Analyzes the given legal document and extracts the specified clause.
 

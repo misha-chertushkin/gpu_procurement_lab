@@ -14,7 +14,7 @@
 
 import requests
 from typing import Dict, Any
-from utils.config import config
+from assets.config import config
 import logging
 
 logging.basicConfig(level=logging.INFO)

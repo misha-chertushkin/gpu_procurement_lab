@@ -13,9 +13,9 @@
 # limitations under the License.
 
 from google.adk.agents import Agent
-from tools.file_system import FileSystemTools
-from utils.gdrive_integration import ReportGenerator
-from utils.config import config
+from assets.tools.file_system import FileSystemTools
+from assets.tools.gdrive_integration import ReportGenerator
+from assets.config import config
 
 fs_tools = FileSystemTools(root_dir="./workspace")
 uploader = ReportGenerator()

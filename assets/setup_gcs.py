@@ -15,7 +15,7 @@
 from google.cloud import storage
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from utils.config import config
+from config import config
 import os
 
 

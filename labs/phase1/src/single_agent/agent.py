@@ -1,12 +1,12 @@
 import json
 from google import genai
 from google.genai import types
-from utils.config import config
-from tools.api import LogisticsTools
-from tools.database import DatabaseTools
-from tools.file_system import FileSystemTools
-from tools.contract_analyzer import ContractAnalyzer
-from utils.gdrive_integration import ReportGenerator
+from assets.config import config
+from assets.tools.api import LogisticsTools
+from assets.tools.database import DatabaseTools
+from assets.tools.file_system import FileSystemTools
+from assets.tools.contract_analyzer import ContractAnalyzer
+from assets.tools.gdrive_integration import ReportGenerator
 
 PROMPT = f'''
 <task>

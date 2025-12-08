@@ -18,19 +18,13 @@ from google import genai
 from dotenv import load_dotenv
 
 from agents.source_gpus.agent import create_agent as create_agent_source_gpus_agent
-from utils.config import config
-
+from assets.config import config
 
 load_dotenv()
-
 
 PROJECT_ID = os.getenv("PROJECT_ID", "unset")
 LOCATION = os.getenv("LOCATION", "us-central1")
 
-
-os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "1"
-os.environ["GOOGLE_CLOUD_PROJECT"] = PROJECT_ID
-os.environ["GOOGLE_CLOUD_LOCATION"] = LOCATION
 
 genai_client = genai.Client(
     vertexai=True,

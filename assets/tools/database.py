@@ -14,7 +14,7 @@
 
 from google.cloud import bigquery
 from typing import List, Dict, Any
-from utils.config import config
+from assets.config import config
 import logging
 
 logging.basicConfig(level=logging.INFO)

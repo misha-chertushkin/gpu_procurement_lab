@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from google.cloud import bigquery
-from utils.config import config
+from config import config
 import os
 
 

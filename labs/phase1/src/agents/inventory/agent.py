@@ -13,8 +13,8 @@
 # limitations under the License.
 
 from google.adk.agents import Agent
-from tools.database import DatabaseTools
-from utils.config import config
+from assets.tools.database import DatabaseTools
+from assets.config import config
 
 db_tools = DatabaseTools()
 

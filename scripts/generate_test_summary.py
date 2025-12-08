@@ -64,10 +64,10 @@ def main(files):
 
     markdown_content = generate_summary_markdown(results)
 
-    with open('TEST_RESULTS.md', 'w') as f:
+    with open('./workspace/LATEST_TEST_SUMMARY.md', 'w') as f:
         f.write(markdown_content)
 
-    print("Test summary generated at TEST_RESULTS.md")
+    print("Test summary generated at ./workspace/LATEST_TEST_SUMMARY.md")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

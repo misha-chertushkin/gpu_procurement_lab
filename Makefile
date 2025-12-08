@@ -208,8 +208,8 @@ endif
 .PHONY: test-summary
 test-summary:
 	@echo "📊 Generating test summary report..."
-	@$(VENV)/bin/python scripts/generate_test_summary.py $(foreach lab,$(LABS),$(wildcard $(lab)/build/test-results.xml))
-	@echo "✅ Report saved to TEST_RESULTS.md"
+	@$(VENV)/bin/python scripts/generate_test_summary.py $(foreach lab,$(LABS),$(wildcard workspace/$(lab)/tests/latest-test-results.xml))
+	@echo "✅ Report saved to ./workspace/LATEST_TEST_RESULTS.md"
 
 
 # Clean the Environment

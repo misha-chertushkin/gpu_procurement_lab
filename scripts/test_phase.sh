@@ -46,13 +46,16 @@ echo -e "\n${BLUE}[1/2] Launching Mock Spot Market API...${NC}"
 # Kill any existing process on port 8080 to avoid conflicts
 fuser -k $API_PORT/tcp > /dev/null 2>&1
 
+mkdir -p ./workspace/$PHASE_DIR/logs/
+mkdir -p ./workspace/$PHASE_DIR/tests/
+
 # Start API in background
 cd assets/mock_api
-uvicorn main:app --host $API_HOST --port $API_PORT > ../../workspace/logs/latest-unitest-api-logs.txt 2>&1 &
+uvicorn main:app --host $API_HOST --port $API_PORT > ../../workspace/$PHASE_DIR/logs/latest-test-mock-api.log 2>&1 &
 API_PID=$!
 cd ../..
 
-echo "✅ API running in background (PID: $API_PID). Logs at ./workspace/logs/latest-unitest-api-logs.txt"
+echo "✅ API running in background (PID: $API_PID). Logs at ./workspace/$PHASE_DIR/logs/latest-test-mock-api.log"
 echo "   Waiting 5 seconds for API to warm up..."
 sleep 5
 
@@ -61,7 +64,7 @@ echo -e "\n${BLUE}[2/2] 🛡️ Launching Unit Test...${NC}"
 echo "---------------------------------------------------------------"
 
 # Run the main agent loop
-python -m pytest -v -s --log-cli-level=INFO -W "ignore::DeprecationWarning" $PHASE_DIR/tests --junitxml=$PHASE_DIR/build/latest-test-results.xml 2>&1 | tee $PHASE_DIR/build/latest-test-results.log
+python -m pytest -v -s --log-cli-level=INFO -W "ignore::DeprecationWarning" $PHASE_DIR/tests --junitxml=./workspace/$PHASE_DIR/tests/latest-test-results.xml 2>&1 | tee ./workspace/$PHASE_DIR/tests/latest-test-results.log
 
 # --- Cleanup ---
 echo -e "\n${BLUE}🧹 Cleaning up...${NC}"

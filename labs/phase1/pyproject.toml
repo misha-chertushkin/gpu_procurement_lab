@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "gpu_procurement_system"
+name = "gpu_procurement_system_phase1"
 version = "0.1.0"
 description = "Vertex AI L400 Lab 2: Multi-Agent GPU Procurement System"
 authors = [
@@ -11,6 +11,7 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
+    "assets @ file:../../assets",
     "google-cloud-aiplatform>=1.129.0",
     "google-cloud-bigquery",
     "google-cloud-storage",

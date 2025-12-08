@@ -15,9 +15,9 @@
 from dotenv import load_dotenv
 from google.adk.agents import Agent, SequentialAgent, ParallelAgent
 from google.adk.tools.tool_context import ToolContext
-from tools.file_system import FileSystemTools
-from utils.gdrive_integration import ReportGenerator
-from utils.config import config
+from assets.tools.file_system import FileSystemTools
+from assets.tools.gdrive_integration import ReportGenerator
+from assets.config import config
 from agents.inventory.agent import create_agent as create_inventory_agent
 from agents.legal.agent import create_agent as create_legal_agent
 from agents.logistics.agent import create_agent as create_logistics_agent

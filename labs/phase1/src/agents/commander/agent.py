@@ -18,9 +18,9 @@ from agents.inventory.agent import inventory_agent
 from agents.legal.agent import legal_agent
 from agents.logistics.agent import logistics_agent
 from agents.purchase_order.agent import purchase_order_agent
-from tools.file_system import FileSystemTools
-from utils.gdrive_integration import ReportGenerator
-from utils.config import config
+from assets.tools.file_system import FileSystemTools
+from assets.tools.gdrive_integration import ReportGenerator
+from assets.config import config
 
 tools = FileSystemTools(root_dir="./workspace")
 reporter = ReportGenerator()

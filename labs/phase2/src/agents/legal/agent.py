@@ -13,8 +13,8 @@
 # limitations under the License.
 
 from google.adk.agents import Agent
-from tools.contract_analyzer import ContractAnalyzer
-from utils.config import config
+from assets.tools.contract_analyzer import ContractAnalyzer
+from assets.config import config
 
 # Initialize tools
 rag_tools = ContractAnalyzer()

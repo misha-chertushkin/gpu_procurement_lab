@@ -13,8 +13,8 @@
 # limitations under the License.
 
 from google.adk.agents import Agent
-from tools.api import LogisticsTools
-from utils.config import config
+from assets.tools.api import LogisticsTools
+from assets.config import config
 
 # Initialize tools
 api_tools = LogisticsTools()
