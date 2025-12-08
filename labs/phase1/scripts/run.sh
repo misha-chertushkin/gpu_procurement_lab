@@ -60,7 +60,7 @@ echo "---------------------------------------------------------------"
 
 
 # Run the main agent loop
-python -m google.adk.cli web ./labs/$PHASE/src/agents
+python -m google.adk.cli web --reload_agents ./labs/$PHASE/src/agents
 
 
 # --- Cleanup ---

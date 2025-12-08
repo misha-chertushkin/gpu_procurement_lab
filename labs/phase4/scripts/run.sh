@@ -15,7 +15,8 @@
 
 
 # Configuration
-API_PORT=8080
+MOCK_API_PORT=8080
+A2A_SUB_AGENT_PORT=8081
 API_HOST="127.0.0.1"
 
 PHASE="phase4"
@@ -40,13 +41,13 @@ echo -e "${BLUE}🚀 Running Vertex AI L400 Lab 2 Demo for Phase $PHASE...${NC}"
 echo -e "\n${BLUE}[1/2] Launching Mock Spot Market API...${NC}"
 
 # Kill any existing process on port 8080 to avoid conflicts
-fuser -k $API_PORT/tcp > /dev/null 2>&1
+fuser -k $MOCK_API_PORT/tcp > /dev/null 2>&1
 
 mkdir -p ../../workspace/$PHASE/logs/
 
 # Start API in background
 cd ../../assets/mock_api
-uvicorn main:app --host $API_HOST --port $API_PORT > ../../workspace/$PHASE/logs/latest-run-mock-api.log 2>&1 &
+uvicorn main:app --host $API_HOST --port $MOCK_API_PORT > ../../workspace/$PHASE/logs/latest-run-mock-api.log 2>&1 &
 API_PID=$!
 cd ../..
 
@@ -54,18 +55,30 @@ echo "✅ API running in background (PID: $API_PID). Logs at ./workspace/$PHASE/
 echo "   Waiting 5 seconds for API to warm up..."
 sleep 5
 
+
+# Start A2A Sub-Agent in background
+cd ./labs/$PHASE/
+uvicorn src.agents.commander.app:app --host $API_HOST --port $A2A_SUB_AGENT_PORT > ../../workspace/$PHASE/logs/latest-run-a2a-sub-agent.log 2>&1 &
+API_PID=$!
+cd ../..
+
+echo "✅ A2A sub-agent running in background (PID: $API_PID). Logs at ./workspace/$PHASE/logs/latest-run-a2a-sub-agent.log"
+echo "   Waiting 15 seconds for A2A sub-gent to warm up..."
+sleep 15
+
+
 # --- Step 2: The War Room (Agents) ---
 echo -e "\n${BLUE}[2/2] 🛡️ Launching ADK Web UI...${NC}"
 echo "---------------------------------------------------------------"
 
 
 # Run the main agent loop
-python -m google.adk.cli web ./labs/$PHASE/src/agents
+python -m google.adk.cli web --reload_agents ./labs/$PHASE/src/agents
 
 
 # --- Cleanup ---
 echo -e "\n${BLUE}🧹 Cleaning up...${NC}"
 #kill $API_PID
-fuser -k $API_PORT/tcp > /dev/null 2>&1
+fuser -k $MOCK_API_PORT/tcp > /dev/null 2>&1
 echo "✅ Mock API stopped."
 echo -e "${GREEN}🏁 Demo Complete.${NC}"
