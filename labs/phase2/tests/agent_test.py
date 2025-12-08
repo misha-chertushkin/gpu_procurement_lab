@@ -18,9 +18,7 @@ import pytest
 import asyncio
 import logging
 
-from typing import AsyncGenerator
-from google.adk.events.event import Event
-from google.adk.agents import parallel_agent
+from google.adk.utils.context_utils import Aclosing
 
 from dotenv import load_dotenv
 import google.auth
@@ -54,7 +52,7 @@ parameterized_test_data = [
 
 PROJECT_ID = os.getenv("PROJECT_ID", "unset")
 LOCATION = os.getenv("LOCATION", "us-central1")
-MAX_STEPS = int(os.getenv("MAX_STEPS", 30))
+MAX_STEPS = int(os.getenv("MAX_STEPS", 100))
 
 os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "1"
 os.environ["GOOGLE_CLOUD_PROJECT"] = PROJECT_ID
@@ -95,26 +93,26 @@ async def call_agent_async(prompt: str|Content):
     step_count = 0
 
     # Run the agent and print the response
-    async for event in runner.run_async(
+    async with Aclosing(runner.run_async(
         session_id=session.id, user_id="default_user", new_message=message
-    ):
-        step_count += 1
-        
-        if step_count > MAX_STEPS:
-            print(f"\n❌ [System] TERMINATING: Hit max step limit ({MAX_STEPS}).")
-            print("   Likely cause: Infinite loop due to recurring tool errors (404/Connection Refused).")
-            break  # Force exit
-
-        if event.is_final_response():
-            # Check if there is actual text content
-            if event.content and event.content.parts:
-                print(f"\n🤖 [{root_agent.name}]: {event.content.parts[0].text}")
-            else:
-                print("\n🤖 [{root_agent.name}]: (Returned final response with no text)")
-            break 
+    )) as agen:
+        async for event in agen:
+            step_count += 1
             
-        # If it's not final, the agent is thinking/calling tools
-        print(f"   ⚙️ [System] Step {step_count}: Processing...")
+            if step_count > MAX_STEPS:
+                print(f"\n❌ [System] TERMINATING: Hit max step limit ({MAX_STEPS}).")
+                break  # Force exit
+
+            if event.is_final_response():
+                # Check if there is actual text content
+                if event.content and event.content.parts:
+                    print(f"\n🤖 [{root_agent.name}]: {event.content.parts[0].text}")
+                else:
+                    print("\n🤖 [{root_agent.name}]: (Returned final response with no text)")
+                #break 
+                
+            # If it's not final, the agent is thinking/calling tools
+            print(f"   ⚙️ [System] Step {step_count}: Processing...")
 
 
 # Run parameterized tests N times
@@ -140,11 +138,5 @@ def test_run(prompt, run_number):
         location=LOCATION,
     )
 
-    # Handle loop with task shutdown delay
-    loop = asyncio.get_event_loop()
-    try:
-        loop.run_until_complete(call_agent_async(prompt))
-        loop.run_until_complete(asyncio.sleep(0))
-    finally:
-        loop.close()
+    asyncio.run(call_agent_async(prompt))
     

@@ -1,11 +1,11 @@
 # Copyright 2025 Google LLC
-#
+# 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
+#     https://www.apache.org/licenses/LICENSE-2.0
+# 
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,6 +17,8 @@ import pytest
 
 import asyncio
 import logging
+
+from google.adk.utils.context_utils import Aclosing
 
 from dotenv import load_dotenv
 import google.auth
@@ -43,14 +45,14 @@ load_dotenv()
 
 parameterized_test_data = [
     (
-        "Can you please find me 100 H100 GPUs?"
+        "Start the investigation. Find me 500 H100s."
     ),
 ]
 
 
 PROJECT_ID = os.getenv("PROJECT_ID", "unset")
 LOCATION = os.getenv("LOCATION", "us-central1")
-MAX_STEPS = int(os.getenv("MAX_STEPS", 30))
+MAX_STEPS = int(os.getenv("MAX_STEPS", 100))
 
 os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "1"
 os.environ["GOOGLE_CLOUD_PROJECT"] = PROJECT_ID
@@ -59,7 +61,7 @@ os.environ["GOOGLE_CLOUD_LOCATION"] = LOCATION
 os.environ["OTEL_SERVICE_NAME"] = "labs-phase1"
 os.environ["OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED"] = "true"
 os.environ["OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT"] = "true"
-#os.environ["ADK_CAPTURE_MESSAGE_CONTENT_IN_SPANS"] = "false"
+os.environ["ADK_CAPTURE_MESSAGE_CONTENT_IN_SPANS"] = "true"
 
 provider = TracerProvider()
 processor = export.BatchSpanProcessor(
@@ -91,26 +93,26 @@ async def call_agent_async(prompt: str|Content):
     step_count = 0
 
     # Run the agent and print the response
-    async for event in runner.run_async(
+    async with Aclosing(runner.run_async(
         session_id=session.id, user_id="default_user", new_message=message
-    ):
-        step_count += 1
-        
-        if step_count > MAX_STEPS:
-            print(f"\n❌ [System] TERMINATING: Hit max step limit ({MAX_STEPS}).")
-            print("   Likely cause: Infinite loop due to recurring tool errors (404/Connection Refused).")
-            break  # Force exit
-
-        if event.is_final_response():
-            # Check if there is actual text content
-            if event.content and event.content.parts:
-                print(f"\n🤖 [{root_agent.name}]: {event.content.parts[0].text}")
-            else:
-                print("\n🤖 [{root_agent.name}]: (Returned final response with no text)")
-            break 
+    )) as agen:
+        async for event in agen:
+            step_count += 1
             
-        # If it's not final, the agent is thinking/calling tools
-        print(f"   ⚙️ [System] Step {step_count}: Processing...")
+            if step_count > MAX_STEPS:
+                print(f"\n❌ [System] TERMINATING: Hit max step limit ({MAX_STEPS}).")
+                break  # Force exit
+
+            if event.is_final_response():
+                # Check if there is actual text content
+                if event.content and event.content.parts:
+                    print(f"\n🤖 [{root_agent.name}]: {event.content.parts[0].text}")
+                else:
+                    print("\n🤖 [{root_agent.name}]: (Returned final response with no text)")
+                #break 
+                
+            # If it's not final, the agent is thinking/calling tools
+            print(f"   ⚙️ [System] Step {step_count}: Processing...")
 
 
 # Run parameterized tests N times
@@ -136,10 +138,5 @@ def test_run(prompt, run_number):
         location=LOCATION,
     )
 
-    # Handle loop with task shutdown delay
-    loop = asyncio.get_event_loop()
-    try:
-        loop.run_until_complete(call_agent_async(prompt))
-        loop.run_until_complete(asyncio.sleep(0))
-    finally:
-        loop.close()
+    asyncio.run(call_agent_async(prompt))
+    
