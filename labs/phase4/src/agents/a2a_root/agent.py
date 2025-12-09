@@ -28,7 +28,7 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
-gcs_a2a_bucket = os.getenv('AGENT_CARD_BUCKET_URI')
+agent_card_bucket_name = os.getenv('A2A_CARD_BUCKET_NAME', 'unset')
 
 
 # Agent
@@ -36,7 +36,7 @@ def create_agent():
     """
     Factory function to create the root agent.
     """
-    remote_agents = get_remote_agents(agent_cards=retrieve_agent_cards())
+    remote_agents = get_remote_agents(agent_cards=retrieve_agent_cards(agent_card_bucket_name))
     log.info(f"Remote agents: {remote_agents}")
 
     # Dynamically construct the description and instructions from remote agents
@@ -63,3 +63,5 @@ def create_agent():
         instruction=instruction,
         sub_agents=[*remote_agents],
     )
+
+root_agent = create_agent()

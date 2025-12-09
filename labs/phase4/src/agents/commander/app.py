@@ -29,7 +29,7 @@ load_dotenv()
 project_id = os.getenv('PROJECT_ID', 'unset')
 location = os.getenv('LOCATION', 'unset')
 service_port = int(os.getenv('LOCAL_SERVICE_PORT', '8081'))
-gcs_a2a_bucket = os.getenv('AGENT_CARD_BUCKET_URI', 'unset')
+gcs_a2a_bucket = os.getenv('A2A_CARD_BUCKET_URI', 'unset')
 
 
 logging.basicConfig(level=logging.INFO)

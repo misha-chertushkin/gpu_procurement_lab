@@ -50,10 +50,6 @@ def get_id_token(url: str):
     return id_token
 
 
-gcs_a2a_bucket = os.getenv('AGENT_CARD_BUCKET_URI', 'unset')
-agent_card_bucket_name = gcs_a2a_bucket.replace("gs://", "")
-
-
 # BEGIN RUNTIME-PATCH
 # Ensures Authorization Bearer token is refreshed for every request.
 async def new_jsonrpc_send_request(
@@ -92,7 +88,7 @@ log.info("JsonRpcTransport._send_request has been successfully monkey-patched to
 # END RUNTIME-PATCH
 
 
-def get_gcs_cards() -> List[Dict[str, Any]]:
+def get_gcs_cards(agent_card_bucket_name: str) -> List[Dict[str, Any]]:
     """
     Downloads all files from a GCS bucket, assuming they are JSON,
     and converts them into a list of Python dictionaries.
@@ -124,10 +120,10 @@ def get_gcs_cards() -> List[Dict[str, Any]]:
         
     return all_cards
 
-def retrieve_agent_cards() -> List[AgentCard]:
+def retrieve_agent_cards(agent_card_bucket_name: str) -> List[AgentCard]:
     try:
         agent_cards = []
-        cards_payload = get_gcs_cards()
+        cards_payload = get_gcs_cards(agent_card_bucket_name)
         log.info(f"GCS CARDS PAYLOAD: {cards_payload}")
         for card in cards_payload:
             agent_cards.append(
