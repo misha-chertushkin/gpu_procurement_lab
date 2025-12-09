@@ -157,9 +157,8 @@ graph TD
         commander_agent_P3("commander_agent");
 
         commander_agent_P3 -- "1. Publishes Card" --> gcs_bucket_P3;
-        a2a_root_agent_P3 -- "2. Reads Card" --> gcs_bucket_P3;
-        a2a_root_agent_P3 -- "3. Invokes" --> commander_agent_P3;
-
+        gcs_bucket_P3 -- "2. Reads Card" --> a2a_root_agent_P3;
+        
         subgraph "Commander Agent Internals"
             commander_agent_P3 --> source_gpus_agent_P3("source_gpus_agent");
 
@@ -191,5 +190,15 @@ graph TD
             legal_agent_P3 --> LegalTools_P3;
             logistics_agent_P3 --> LogisticsTools_P3;
         end
+
+        subgraph "A2A Root Agent"
+            a2a_root_agent_P3 -- "3. Invokes" --> commander_agent_P3;
+        end
+
+        subgraph "A2A Card Publish/Discover Bucket"
+            gcs_bucket_P3;
+        end
+
+        
     end
 ```
