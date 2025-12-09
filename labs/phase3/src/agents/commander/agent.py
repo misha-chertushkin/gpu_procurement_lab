@@ -56,9 +56,10 @@ CRITICAL TERMINATION RULES:
 - After uploading the report, provide a concise summary and STOP.
 """
 
-root_agent = Agent(
-    name="root_agent",
-    model=config.MODEL_NAME,
-    instruction=COMMANDER_SYSTEM_PROMPT,
-    sub_agents=[create_agent_source_gpus_agent()],
-)
+def create_agent():
+    return Agent(
+        name="commander_agent",
+        model=config.MODEL_NAME,
+        instruction=COMMANDER_SYSTEM_PROMPT,
+        sub_agents=[create_agent_source_gpus_agent()],
+    )

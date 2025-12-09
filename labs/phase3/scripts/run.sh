@@ -15,7 +15,8 @@
 
 
 # Configuration
-API_PORT=8080
+MOCK_API_PORT=8080
+A2A_SUB_AGENT_PORT=8081
 API_HOST="127.0.0.1"
 
 PHASE="phase3"
@@ -36,17 +37,17 @@ source ./$VENV_DIR/bin/activate
 
 echo -e "${BLUE}🚀 Running Vertex AI L400 Lab 2 Demo for Phase $PHASE...${NC}"
 
-# --- Step 1: The External World (Mock API) ---
-echo -e "\n${BLUE}[1/2] Launching Mock Spot Market API...${NC}"
+mkdir -p ../../workspace/labs/$PHASE/logs/
+
+# --- Step 1: The Mock API ---
+echo -e "\n${BLUE}[1/3] Launching Mock Spot Market API...${NC}"
 
 # Kill any existing process on port 8080 to avoid conflicts
-fuser -k $API_PORT/tcp > /dev/null 2>&1
-
-mkdir -p ../../workspace/labs/$PHASE/logs/
+fuser -k $MOCK_API_PORT/tcp > /dev/null 2>&1
 
 # Start API in background
 cd ../../assets/mock_api
-uvicorn main:app --host $API_HOST --port $API_PORT > ../../workspace/labs/$PHASE/logs/latest-run-mock-api.log 2>&1 &
+python -m uvicorn main:app --host $API_HOST --port $MOCK_API_PORT > ../../workspace/labs/$PHASE/logs/latest-run-mock-api.log 2>&1 &
 API_PID=$!
 cd ../..
 
@@ -54,8 +55,20 @@ echo "✅ API running in background (PID: $API_PID). Logs at ./workspace/labs/$P
 echo "   Waiting 5 seconds for API to warm up..."
 sleep 5
 
-# --- Step 2: The War Room (Agents) ---
-echo -e "\n${BLUE}[2/2] 🛡️ Launching ADK Web UI...${NC}"
+# --- Step 2: The A2A Sub-Agent ---
+echo -e "\n${BLUE}[2/3] Launching A2A Sub-agent...${NC}"
+
+# Start A2A Sub-Agent in background
+python -m uvicorn labs.$PHASE.src.agents.commander.app:app --host $API_HOST --port $A2A_SUB_AGENT_PORT > ./workspace/labs/$PHASE/logs/latest-run-a2a-sub-agent.log 2>&1 &
+API_PID=$!
+
+echo "✅ A2A sub-agent running in background (PID: $API_PID). Logs at ./workspace/labs/$PHASE/logs/latest-run-a2a-sub-agent.log"
+echo "   Waiting 15 seconds for A2A sub-gent to warm up..."
+sleep 15
+
+
+# --- Step 3: The ADK Web UI ---
+echo -e "\n${BLUE}[3/3] 🛡️ Launching ADK Web UI...${NC}"
 echo "---------------------------------------------------------------"
 
 
@@ -65,7 +78,11 @@ python -m google.adk.cli web --reload_agents ./labs/$PHASE/src/agents
 
 # --- Cleanup ---
 echo -e "\n${BLUE}🧹 Cleaning up...${NC}"
-#kill $API_PID
-fuser -k $API_PORT/tcp > /dev/null 2>&1
+
+fuser -k $MOCK_API_PORT/tcp > /dev/null 2>&1
 echo "✅ Mock API stopped."
+
+fuser -k $A2A_SUB_AGENT_PORT/tcp > /dev/null 2>&1
+echo "✅ A2A sub-agent stopped."
+
 echo -e "${GREEN}🏁 Demo Complete.${NC}"

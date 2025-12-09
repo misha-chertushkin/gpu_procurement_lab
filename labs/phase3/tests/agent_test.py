@@ -29,7 +29,7 @@ from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
 from opentelemetry.sdk.trace import export
 from opentelemetry.sdk.trace import TracerProvider
 
-from agents.commander.agent import root_agent
+from agents.a2a_root.agent import root_agent
 
 # Configure Logging
 logging.basicConfig(level=logging.INFO)
