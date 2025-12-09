@@ -26,7 +26,14 @@ class DatabaseTools:
         self.client = bigquery.Client(project=config.PROJECT_ID)
 
     def run_query(self, sql_query: str) -> List[Dict[str, Any]]:
-        """Executes the given SQL query and returns the list of rows or an error message."""
+        """Executes the given SQL query and returns the list of rows or an error message.
+        
+        Args:
+            sql_query: full text of SQL query in Google BigQuery format.
+
+        Returns:
+            List of dictionary objects representing the query results.
+        """
         log.info(f"[🔧 run_query] Executing SQL:\n    {sql_query}")
         try:
             query_job = self.client.query(sql_query)
@@ -38,7 +45,14 @@ class DatabaseTools:
             return [{"error": str(e)}]
 
     def explore_schema(self, table_name: str) -> Dict[str, Any]:
-        """Returns the list of columns for the specified table, and a sample of data from the first 5 rows."""
+        """Returns the list of columns for the specified table, and a sample of data from the first 5 rows.
+        
+        Args:
+            table_name: fully qualified database table name
+
+        Returns:
+            Information about this table including the list of column names and up to 5 rows with sample data.
+        """
         log.info(f"[🔧 explore_schema] Exploring Schema for: {table_name}")
         table_name = table_name.replace(";", "").replace("--", "")
         # Handle cases where LLM passes the full ID vs just short table name

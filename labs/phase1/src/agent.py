@@ -39,12 +39,12 @@ Respond with a brief summary of your research steps and calculation. Explain eve
         2. I found [number_of_available_GPUs_in_stock] in our warehouse that are available based on [brief analysis of Master Supply Agreement]
         3. The remaining [number_of_GPUs_] GPUs can be ordered on the marketplace from [vendor name] for $[total amount]K total including shipping.
         ```
-    - Use the 'write_file' tool to save the repoert to `workspace/Executive_Report.md`.
+    - Use the 'write_file' tool to save the repoert to `Executive_Report.md`.
     - Upload the report to Google Drive using the `upload_report` tool. 
 5. Generate the Purchase Order in Markdown format.
     - Use information from the Executive Report generated in Step 4.
     - Generate the purchase order in Markdown format, with placeholders for information that is not available.
-    - Use the 'write_file' tool to save the purchase order to `workspace/Purchase_Order.md`.
+    - Use the 'write_file' tool to save the purchase order to `Purchase_Order.md`.
     - Upload purchase to Google Drive using the `upload_report` tool. 
     - The purchase order must have the following structure:
         ```
@@ -94,6 +94,8 @@ def run_agent(number_of_gpus: int) -> None:
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True)
             )
         )
+        assert response.candidates, f'invalid response: {response.model_dump_json(indent=4)}'
+        assert response.candidates[0].finish_reason == types.FinishReason.STOP, f'bad finish_reason: {response.candidates[0].finish_reason}'
         fc_parts = [part for part in response.candidates[0].content.parts if part.function_call]
         if not fc_parts:
             print(f'\n{"="*80}\nrun_agent executed {len(trajectory)} inferences:')
@@ -116,7 +118,7 @@ def run_agent(number_of_gpus: int) -> None:
                 case 'append_to_log': result = filesystem.append_to_log(args['filename'], args['content'])
                 case 'list_files': result = filesystem.list_files()
                 case 'analyze_contract_clause': result = contract.analyze_contract_clause(args['doc_name'], args['clause_type'])
-                case 'upload_report': result = google_drive.upload_file(args['filename'], args['content'], args['metadata'])
+                case 'upload_file': result = google_drive.upload_file(args['filename'], args['content'], args['metadata'])
                 case _: raise ValueError(f"Unrecognized function_call.name: {fc_part.function_call.name}")
             function_responses.append(types.Part.from_function_response(name=fc_part.function_call.name, response={'result': result}))
         prompt.append(types.Content(role="tool", parts=function_responses))
