@@ -146,3 +146,51 @@ graph TD
         logistics_agent_P2 --> LogisticsTools_P2;
     end
 ```
+
+## Phase 3 Agents and Tools
+
+```mermaid
+graph TD
+    subgraph "Phase 3"
+        a2a_root_agent_P3("a2a_root_agent (entry point)");
+        
+        subgraph "Discovered Agents"
+            commander_agent_P3("commander_agent");
+        end
+        
+        a2a_root_agent_P3 -- "Discovers & Invokes" --> commander_agent_P3;
+
+        subgraph "Orchestrators"
+            source_gpus_agent_P3("source_gpus_agent");
+            source_gpus_parallel_agent_P3("source_gpus_parallel_agent");
+            source_gpus_merge_agent_P3("source_gpus_sum_and_report_agent");
+        end
+
+        subgraph "Sub-Agents"
+            inventory_agent_P3("inventory_agent");
+            legal_agent_P3("legal_agent");
+            logistics_agent_P3("logistics_agent");
+        end
+
+        subgraph "Tools"
+            MergeTools_P3["fs.read_file, fs.write_file, fs.append_to_log, fs.list_files, gdrive.upload_file"];
+            InventoryTools_P3["db.explore_schema, db.run_query"];
+            LegalTools_P3["rag.analyze_contract_clause"];
+            LogisticsTools_P3["api.fetch_spot_prices, api.estimate_shipping"];
+        end
+
+        commander_agent_P3 --> source_gpus_agent_P3;
+
+        source_gpus_agent_P3 --> source_gpus_parallel_agent_P3;
+        source_gpus_agent_P3 --> source_gpus_merge_agent_P3;
+
+        source_gpus_parallel_agent_P3 --> inventory_agent_P3;
+        source_gpus_parallel_agent_P3 --> legal_agent_P3;
+        source_gpus_parallel_agent_P3 --> logistics_agent_P3;
+
+        source_gpus_merge_agent_P3 --> MergeTools_P3;
+        inventory_agent_P3 --> InventoryTools_P3;
+        legal_agent_P3 --> LegalTools_P3;
+        logistics_agent_P3 --> LogisticsTools_P3;
+    end
+```
