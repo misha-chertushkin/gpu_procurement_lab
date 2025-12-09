@@ -71,12 +71,12 @@ class GoogleDrive:
         Uploads the provided file to Google Drive.
 
         Args:
-            filename (str): The name of the file that should be uploaded.
-            content (str): The full plain text content of the file.
-            metadata (Dict): Optional metadata (e.g., agent version).
+            filename: The name of the file that should be uploaded.
+            content: The full plain text content of the file.
+            metadata: Dict with optional metadata (e.g., agent version).
 
         Returns:
-            str: Success message with file ID or an error message.
+            str: Confirmation of successful file upload or an error message.
         """
         # Save a local backup first
         try:

@@ -53,7 +53,13 @@ class FileSystemTools:
 
     def read_file(self, filename: str) -> str:
         """
-        Reads the content of a specific file.
+        Returns the content of the given file.
+
+        Args:
+            filename: path to a text file including file name and extension.
+
+        Returns:
+            Full plain text content of the file.
         """
         log.info(f"[🔧 read_file] Reading {filename}")
         safe_path = self._get_safe_path(filename)
@@ -72,7 +78,15 @@ class FileSystemTools:
 
     def append_to_log(self, filename: str, content: str) -> str:
         """
-        Appends text to a file. Useful for maintaining a running log or tracker.
+        Appends text to a file. 
+
+        Args:
+            filename: path to a text file including file name and extension.
+            content: plain text content that will be appended to the file.
+
+        Returns:
+            Confirmation of successful completion or an error message.
+
         """
         log.info(f"[🔧 append_to_log] Addending to {filename}")
         safe_path = self._get_safe_path(filename)
@@ -87,7 +101,14 @@ class FileSystemTools:
 
     def write_file(self, filename: str, content: str) -> str:
         """
-        Overwrites a file with new content. 
+        Creates or overwrites a text file with specified content. 
+        
+        Args:
+            filename: path to a text file including file name and extension.
+            content: plain text content that will be appended to the file.
+
+        Returns:
+            Confirmation of successful completion or an error message.
         """
         log.info(f"[🔧 write_file] Writing to {filename}")
         safe_path = self._get_safe_path(filename)
