@@ -78,7 +78,7 @@ python -m google.adk.cli web --reload_agents ./labs/$PHASE/src/agents
 
 # --- Cleanup ---
 echo -e "\n${BLUE}🧹 Cleaning up...${NC}"
-#kill $API_PID
+
 fuser -k $MOCK_API_PORT/tcp > /dev/null 2>&1
 echo "✅ Mock API stopped."
 
