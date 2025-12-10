@@ -31,7 +31,7 @@ NC='\033[0m' # No Color
 # Load load environment
 . ../../scripts/base_env.sh
 
-echo "PWD: $PWD"
+#echo "PWD: $PWD"
 
 source ./$VENV_DIR/bin/activate
 

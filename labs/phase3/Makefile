@@ -77,12 +77,12 @@ upgrade: $(VENV_TIMESTAMP) upgrade-pip
 # Run and Test
 .PHONY: run
 run: $(INSTALL_TIMESTAMP)
-	./scripts/run.sh
+	@./scripts/run.sh
 
 
 .PHONY: test
 test: $(INSTALL_TIMESTAMP)
-	./scripts/test.sh
+	@./scripts/test.sh
 
 
 # Clean Environment
