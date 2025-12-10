@@ -1,6 +1,19 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from google.cloud import bigquery
-from google.cloud.exceptions import NotFound
-from utils.config import config
+from config import config
 import os
 
 
@@ -43,21 +56,17 @@ def setup_database():
         with open(file_path, "r") as f:
             sql = f.read()
 
-            # Split by semicolon to handle multiple statements
-            statements = sql.split(";")
+            # remove comments from the sql
+            sql = "".join(line for line in sql.splitlines() if not line.strip().startswith("--"))
+            
+            # Dynamic injection of dataset ID
+            sql = sql.replace("gpu_procurement_db", config.DATASET_ID)
 
-            for stmt in statements:
-                if stmt.strip():
-                    try:
-                        # Dynamic injection of dataset ID
-                        clean_stmt = stmt.replace(
-                            "gpu_procurement_db", config.DATASET_ID
-                        )
-
-                        query_job = client.query(clean_stmt)
-                        query_job.result()  # Wait for completion
-                    except Exception as e:
-                        print(f"❌ Error running statement in {filename}: {e}")
+            try:
+                query_job = client.query(sql)
+                query_job.result()  # Wait for completion
+            except Exception as e:
+                print(f"❌ Error running statement in {filename}: {e}")
 
         print(f"✅ {filename} deployed successfully.")
 

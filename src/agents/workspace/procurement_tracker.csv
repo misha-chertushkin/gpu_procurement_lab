@@ -1,7 +1,0 @@
-timestamp,source,quantity,status,notes
-Inventory Agent,300,Quarantined,"Bin '55', Status Flag 9"
-
-Legal Agent,300,Pending Supplier Verification,"Update to previous entry. Units can be used if primary supplier delivery is delayed >60 days."
-
-Logistics Agent,250,Available,"FastChips_Reseller_LLC, $32,000 per unit"
-

@@ -1,3 +1,17 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 variable "project_id" {
   description = "The GCP Project ID"
   type        = string
@@ -13,4 +27,21 @@ variable "dataset_id" {
   description = "BigQuery Dataset ID"
   type        = string
   default     = "gpu_procurement_db"
+}
+
+variable "gcs_bucket_name" {
+  description = "Legal Contract GCS Bucket Name"
+  type        = string
+  default     = "unset"
+}
+
+variable "a2a_card_bucket_name" {
+  description = "A2A Card GCS Bucket Name"
+  type        = string
+  default     = "unset"
+}
+
+locals {
+  final_gcs_bucket_name = var.gcs_bucket_name != "unset" ? var.gcs_bucket_name : "${var.project_id}-gpu-procurement-docs"
+  final_a2a_card_bucket_name = var.a2a_card_bucket_name != "unset" ? var.a2a_card_bucket_name : "${var.project_id}-gpu-procurement-a2a-cards"
 }

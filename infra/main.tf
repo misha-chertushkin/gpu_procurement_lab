@@ -1,16 +1,30 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # 1. The Dataset
 resource "google_bigquery_dataset" "dataset" {
-  dataset_id                  = var.dataset_id
-  friendly_name               = "GPU Procurement Legacy DB"
-  description                 = "The opaque legacy database for the L400 Lab"
-  location                    = "US"
-  delete_contents_on_destroy  = true
+  dataset_id                 = var.dataset_id
+  friendly_name              = "GPU Procurement Legacy DB"
+  description                = "The opaque legacy database for the L400 Lab"
+  location                   = "US"
+  delete_contents_on_destroy = true
 }
 
 # 2. Table 1: The Messy Inventory (Schema from Phase 1 Design)
 resource "google_bigquery_table" "inventory" {
-  dataset_id = google_bigquery_dataset.dataset.dataset_id
-  table_id   = "LEGACY_INV_MAIN_V2"
+  dataset_id          = google_bigquery_dataset.dataset.dataset_id
+  table_id            = "LEGACY_INV_MAIN_V2"
   deletion_protection = false
 
   schema = <<EOF
@@ -41,7 +55,7 @@ resource "google_bigquery_table" "inventory" {
   },
   {
     "name": "STATUS_FLAG_9",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Status Flag: 0=OK, 9=Legal Hold"
   }
@@ -51,8 +65,8 @@ EOF
 
 # 3. Table 2: The Rosetta Stone Catalog
 resource "google_bigquery_table" "catalog" {
-  dataset_id = google_bigquery_dataset.dataset.dataset_id
-  table_id   = "REF_CATALOG_DUMP"
+  dataset_id          = google_bigquery_dataset.dataset.dataset_id
+  table_id            = "REF_CATALOG_DUMP"
   deletion_protection = false
 
   schema = <<EOF
@@ -82,6 +96,12 @@ resource "google_bigquery_job" "seed_inventory" {
   job_id   = "seed_inventory_${formatdate("YYYYMMDDhhmmss", timestamp())}"
   location = "US"
 
+  lifecycle {
+    ignore_changes = [
+      job_id,
+    ]
+  }
+
   query {
     query = <<EOT
       INSERT INTO `${var.project_id}.${var.dataset_id}.${google_bigquery_table.inventory.table_id}` 
@@ -93,9 +113,9 @@ resource "google_bigquery_job" "seed_inventory" {
       ('REF_9982_X', 'A1', 0, 1715620000, '0'),
       ('REF_1002_A', 'B2', 5000, 1715500000, '0')
     EOT
-    
+
     create_disposition = ""
-    write_disposition = ""
+    write_disposition  = ""
   }
 
   depends_on = [google_bigquery_table.inventory]
@@ -105,8 +125,14 @@ resource "google_bigquery_job" "seed_catalog" {
   job_id   = "seed_catalog_${formatdate("YYYYMMDDhhmmss", timestamp())}"
   location = "US"
 
+  lifecycle {
+    ignore_changes = [
+      job_id,
+    ]
+  }
+
   query {
-    query = <<EOT
+    query              = <<EOT
       INSERT INTO `${var.project_id}.${var.dataset_id}.${google_bigquery_table.catalog.table_id}` 
       (REF_ID, HUMAN_READABLE_NAME, MANUFACTURER)
       VALUES
@@ -114,7 +140,7 @@ resource "google_bigquery_job" "seed_catalog" {
       ('REF_1002_A', 'Standard Power Cable', 'Generic')
     EOT
     create_disposition = ""
-    write_disposition = ""
+    write_disposition  = ""
   }
 
   depends_on = [google_bigquery_table.catalog]
