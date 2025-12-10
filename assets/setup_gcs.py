@@ -1,7 +1,21 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from google.cloud import storage
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from utils.config import config
+from config import config
 import os
 
 
@@ -22,7 +36,7 @@ def create_contract_pdf(filename: str):
     c.drawString(50, height - 85, "DATE: 2024-01-01")
 
     # Clause 4: The Restriction (Exclusivity)
-    # This is what stops the Naive Agent.
+    # The Naive Agent is expected to struggle with this
     c.setFont("Helvetica-Bold", 12)
     c.drawString(50, height - 150, "4. EXCLUSIVITY AND SOURCING")
     c.setFont("Helvetica", 11)
@@ -37,8 +51,7 @@ def create_contract_pdf(filename: str):
         c.drawString(50, y, line)
         y -= 15
 
-    # Clause 7: The Loophole (Force Majeure)
-    # This is what the Legal Agent must find.
+    # Clause 7: The Loophole (Force Majeure) - his is what the Legal Agent must find.
     c.setFont("Helvetica-Bold", 12)
     c.drawString(50, y - 30, "7. NON-PERFORMANCE AND EXCEPTIONS")
     y -= 50
@@ -65,13 +78,12 @@ def setup_gcs():
     client = storage.Client(project=config.PROJECT_ID)
     bucket_name = config.BUCKET_NAME
 
-    # 1. Create Bucket if not exists
+    # 1. Check if Bucket exists
     try:
         bucket = client.bucket(bucket_name)
         if not bucket.exists():
-            print(f"🪣 Creating bucket {bucket_name}...")
-            bucket = client.create_bucket(bucket_name, location='US')
-            print(f"✅ Bucket {bucket_name} created.")
+            print(f"❌ Bucket {bucket_name} does not exist.  Please initialize the environment.")
+            return
         else:
             print(f"✅ Bucket {bucket_name} already exists.")
     except Exception as e:

@@ -1,7 +1,0 @@
-timestamp,source,quantity,status,notes
-inventory,300,quarantined,in hold location 55
-
-legal,300,conditionally cleared,contingent on NVIDIA delivery delay
-
-logistics,250,available,"FastChips_Reseller_LLC at $32,000/unit"
-
