@@ -30,7 +30,7 @@ NC='\033[0m' # No Color
 # Load load environment
 . ../../scripts/base_env.sh
 
-echo "PWD: $PWD"
+#echo "PWD: $PWD"
 
 source ./$VENV_DIR/bin/activate
 
@@ -55,12 +55,12 @@ echo "   Waiting 5 seconds for API to warm up..."
 sleep 5
 
 # --- Step 2: The War Room (Agents) ---
-echo -e "\n${BLUE}[2/2] 🛡️ Launching ADK Web UI...${NC}"
+echo -e "\n${BLUE}[2/2] 🛡️ Running Gemini Prompt...${NC}"
 echo "---------------------------------------------------------------"
 
 
 # Run the main agent loop
-python -m google.adk.cli web --reload_agents ./labs/$PHASE/src/agents
+python ./labs/$PHASE/src/agent.py
 
 
 # --- Cleanup ---

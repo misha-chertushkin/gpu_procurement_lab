@@ -45,8 +45,8 @@ dev = [
 
 # This section is critical for the 'src' layout
 [tool.setuptools.packages.find]
-where = ["."]  # Look for packages inside src
-include = ["*"]  # Include all packages found
+where = [".."]  # Look for packages in parent dir
+include = ["assets*"]  # Include all packages found
 namespaces = false # Set to true if you plan to use implicit namespace packages
 
 [tool.pytest.ini_options]
