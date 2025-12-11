@@ -20,51 +20,65 @@ ASSET_DIR = "./assets/docs"
 os.makedirs(ASSET_DIR, exist_ok=True)
 
 
-def create_vendor_contract():
+def create_vendor_contract(filename: str):
     """Generates the Master Supply Agreement with the hidden loophole."""
     c = canvas.Canvas(
-        os.path.join(ASSET_DIR, "Master_Supply_Agreement_NVIDIA.pdf"), pagesize=letter
+        os.path.join(ASSET_DIR, filename), pagesize=letter
     )
+    width, height = letter
 
-    c.drawString(100, 750, "MASTER SUPPLY AGREEMENT - CONFIDENTIAL")
-    c.drawString(100, 730, "VENDOR: NVIDIA CORP | BUYER: YOUR_COMPANY")
+    # Header
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(50, height - 50, "MASTER SUPPLY AGREEMENT")
+    c.setFont("Helvetica", 10)
+    c.drawString(
+        50, height - 70, "BETWEEN: NVIDIA CORP (Supplier) AND GLOBAL TECH INC (Buyer)"
+    )
+    c.drawString(50, height - 85, "DATE: 2024-01-01")
 
-    # Clause 2: Exclusivity (The Constraint)
-    c.drawString(100, 680, "2. EXCLUSIVITY")
-    c.drawString(
-        100, 665, "Buyer agrees to purchase all GPU hardware exclusively from Vendor."
-    )
-    c.drawString(
-        100,
-        650,
-        "Purchasing from third parties or spot markets is a breach of contract.",
-    )
+    # Clause 4: The Restriction (Exclusivity)
+    # The Naive Agent is expected to struggle with this
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(50, height - 150, "4. EXCLUSIVITY AND SOURCING")
+    c.setFont("Helvetica", 11)
+    text_4 = [
+        "4.1 Buyer agrees to purchase 100% of its required H100 GPU units exclusively",
+        "from Supplier.",
+        "4.2 Purchase from unauthorized third-party resellers (scalpers, spot market)",
+        "is strictly prohibited and constitutes a material breach of contract.",
+    ]
+    y = height - 170
+    for line in text_4:
+        c.drawString(50, y, line)
+        y -= 15
 
-    # ... padding text ...
-    c.drawString(100, 500, "[...Standard boilerplate omitted for brevity...]")
+    # Clause 7: The Loophole (Force Majeure) - his is what the Legal Agent must find.
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(50, y - 30, "7. NON-PERFORMANCE AND EXCEPTIONS")
+    y -= 50
+    c.setFont("Helvetica", 11)
+    text_7 = [
+        "7.A Standard delays shall not void the exclusivity agreement.",
+        # The Critical Clause 7.B mentioned in the Golden Set
+        "7.B EXCEPTION: If Supplier fails to deliver confirmed orders within sixty (60)",
+        "days of the scheduled delivery date, the Exclusivity requirement (Clause 4)",
+        "shall be temporarily suspended.",
+        "7.C In such events (7.B), Buyer is permitted to source deficit units from",
+        "third-party vendors until Supplier inventory stabilizes.",
+    ]
 
-    # Clause 7.B: Force Majeure (The Loophole)
-    c.drawString(100, 400, "7.B NON-PERFORMANCE & EXCEPTIONS")
-    c.drawString(
-        100,
-        385,
-        "In the event that Vendor fails to deliver agreed units for > 60 days,",
-    )
-    c.drawString(100, 370, "the Exclusivity clause (Section 2) is temporarily voided.")
-    c.drawString(
-        100,
-        355,
-        "Buyer may source units from alternate vendors until backlog is cleared.",
-    )
+    for line in text_7:
+        c.drawString(50, y, line)
+        y -= 15
 
     c.save()
-    print("✅ Generated: Master_Supply_Agreement_NVIDIA.pdf")
+    print(f"📄 Generated local PDF: {filename}")
 
 
-def create_warehouse_manual():
+def create_warehouse_manual(filename: str):
     """Generates the 'Rosetta Stone' for the cryptic status codes."""
     c = canvas.Canvas(
-        os.path.join(ASSET_DIR, "Warehouse_Policy_Manual_1998.pdf"), pagesize=letter
+        os.path.join(ASSET_DIR, filename), pagesize=letter
     )
 
     c.drawString(100, 750, "WAREHOUSE OPERATIONS MANUAL (REV 1998)")
@@ -80,8 +94,3 @@ def create_warehouse_manual():
 
     c.save()
     print("✅ Generated: Warehouse_Policy_Manual_1998.pdf")
-
-
-if __name__ == "__main__":
-    create_vendor_contract()
-    create_warehouse_manual()

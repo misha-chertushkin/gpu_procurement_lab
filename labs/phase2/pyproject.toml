@@ -18,6 +18,8 @@ dependencies = [
     "pandas",
     "pydantic",
     "pytest",
+    "pytest-ordering",
+    "junit2html",
     "reportlab",
     "fastapi",
     "uvicorn",
@@ -43,6 +45,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest",
+    "pytest-ordering",
+    "junit2html",
     "black",
     "ruff"
 ]

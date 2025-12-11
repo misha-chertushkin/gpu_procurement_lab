@@ -63,6 +63,9 @@ echo "---------------------------------------------------------------"
 # Run the main agent loop
 python -m pytest -v -s --log-cli-level=INFO -W "ignore::DeprecationWarning" labs/$PHASE/tests --junitxml=./workspace/labs/$PHASE/tests/latest-test-results.xml 2>&1 | tee ./workspace/labs/$PHASE/tests/latest-test-results.log
 
+# Create HTML report
+junit2html ./workspace/labs/$PHASE/tests/latest-test-results.xml workspace/labs/$PHASE/tests/latest-test-results.html
+
 # --- Cleanup ---
 echo -e "\n${BLUE}🧹 Cleaning up...${NC}"
 fuser -k $API_PORT/tcp > /dev/null 2>&1

@@ -29,7 +29,7 @@ class ContractAnalyzer:
         Analyzes the given legal document and extracts the specified clause.
 
         Args:
-            doc_name (str): The filename in GCS (e.g., 'Master_Supply_Agreement.pdf').
+            doc_name (str): The filename in GCS (e.g., 'Master_Supply_Agreement_NVIDIA.pdf').
             clause_type (str): The specific clause to look for (e.g., 'Exclusivity', 'Force Majeure').
 
         Returns:
@@ -66,3 +66,39 @@ class ContractAnalyzer:
         except Exception as e:
             log.error(f"[❌ analyze_contract_clause] Error analyzing contract: {str(e)}")
             return f"Error analyzing contract: {str(e)}"
+
+    def analyze_warehouse_policy(self, doc_name: str) -> str:
+        """
+        Analyzes the given warehouse policy document.
+
+        Args:
+            doc_name (str): The filename in GCS (e.g., 'Warehouse_Policy_Manual_1998.pdf').
+
+        Returns:
+            str: The extraction and interpretation of the document.
+        """
+
+        gcs_uri = f"gs://{config.BUCKET_NAME}/{doc_name}"
+
+        prompt = f"""
+        You are a specialized warehouse policy legal assistant.
+        Analyze the provided document and understand its inventory management and meaning of codes.
+        """
+
+        try:
+            log.info(f"[🔧 analyze_warehouse_policy] Reviewing Warehouse Policy for GCS URI: {gcs_uri}")
+            document = Part.from_uri(file_uri=gcs_uri, mime_type="application/pdf")
+            response: GenerateContentResponse = self.client.models.generate_content(
+                model=config.MODEL_NAME,
+                contents=[document, prompt],
+            )
+            if not response.text:
+                log.error("[❌ analyze_warehouse_policy] Empty contract analysis.  Something went wrong.")
+                return "Empty warehouse policy analysis.  Something went wrong."
+            
+            log_text = response.text.replace('\n', ' ')
+            log.info(f"[✅ analyze_warehouse_policy] Success: {log_text}")
+            return response.text
+        except Exception as e:
+            log.error(f"[❌ analyze_warehouse_policy] Error analyzing contract: {str(e)}")
+            return f"Error analyzing warehouse policy: {str(e)}"

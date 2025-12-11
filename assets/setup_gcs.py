@@ -13,16 +13,15 @@
 # limitations under the License.
 
 from google.cloud import storage
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 from config import config
-import os
+
+from assets.generate_assets import create_vendor_contract, create_warehouse_manual
 
 
-def create_contract_pdf(filename: str):
-    """
+""" def create_contract_pdf(filename: str):
+    " ""
     Generates a PDF with the specific conflicting clauses required for the lab.
-    """
+    " ""
     c = canvas.Canvas(filename, pagesize=letter)
     width, height = letter
 
@@ -74,6 +73,9 @@ def create_contract_pdf(filename: str):
     print(f"📄 Generated local PDF: {filename}")
 
 
+ """
+
+
 def setup_gcs():
     client = storage.Client(project=config.PROJECT_ID)
     bucket_name = config.BUCKET_NAME
@@ -90,20 +92,25 @@ def setup_gcs():
         print(f"❌ Error setting up bucket: {e}")
         return
 
-    # 2. Generate and Upload PDF
+    # 2. Generate PDFs
     pdf_filename = "Master_Supply_Agreement_NVIDIA.pdf"
-    create_contract_pdf(pdf_filename)
+    create_vendor_contract(pdf_filename)
 
+    pdf_warehouse_filename = "Warehouse_Policy_Manual_1998.pdf"
+    create_warehouse_manual(pdf_warehouse_filename)
+
+    # 3. Upload PDFs
     try:
         blob = bucket.blob(pdf_filename)
-        blob.upload_from_filename(pdf_filename)
+        blob.upload_from_filename(f"./assets/docs/{pdf_filename}")
         print(f"🚀 Uploaded {pdf_filename} to gs://{bucket_name}/")
 
-        # Cleanup local file
-        os.remove(pdf_filename)
+        blob2 = bucket.blob(pdf_warehouse_filename)
+        blob2.upload_from_filename(f"./assets/docs/{pdf_warehouse_filename}")
+        print(f"🚀 Uploaded {pdf_warehouse_filename} to gs://{bucket_name}/")
 
     except Exception as e:
-        print(f"❌ Failed to upload PDF: {e}")
+        print(f"❌ Failed to upload PDFs: {e}")
 
 
 if __name__ == "__main__":

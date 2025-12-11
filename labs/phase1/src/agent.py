@@ -27,11 +27,15 @@ Respond with a brief summary of your research steps and calculation. Explain eve
     - The Master Supply Agreement is stored in GCS as: 'Master_Supply_Agreement_NVIDIA.pdf'
     - You must use the tool `analyze_contract_clause` to extract relevant information from this document.
     - Start by analyzing the 'Exclusivity' clauses (restrictions) and 'Force Majeure' clauses (exceptions) in parallel.
-3. Obtain the latest spot price for any remaining GPUs that should be purchased on the marketplace, including shipping estimates.
+3. Analyze the Warehouse Policy Manual to confirm interpretation of inventory data.
+    - The Warehouse Policy Manual is stored in GCS as: 'Warehouse_Policy_Manual_1998.pdf'
+    - You must use the tool `analyze_warehouse_policy` to extract relevant information from this document.
+    - Start by analyzing inventory codes and descriptions.
+4. Obtain the latest spot price for any remaining GPUs that should be purchased on the marketplace, including shipping estimates.
     - Use the tool `fetch_spot_prices` to find the market price per GPU.
     - Use the tool `estimate_shipping` to quote the shipping cost.
-4. Generate the Executive Report. 
-    - Write a brief explanation of your finding and calculations.
+5. Generate the Executive Report. 
+    - Write a brief explanation of your finding and calculations.  Include all legal clause identifiers (1, 7.B, 3A) in the references.
     - The structure of the Executive Report must follow this example:
         ```
         # Executive Report
@@ -39,9 +43,9 @@ Respond with a brief summary of your research steps and calculation. Explain eve
         2. I found [number_of_available_GPUs_in_stock] in our warehouse that are available based on [brief analysis of Master Supply Agreement]
         3. The remaining [number_of_GPUs_] GPUs can be ordered on the marketplace from [vendor name] for $[total amount]K total including shipping.
         ```
-    - Use the 'write_file' tool to save the repoert to `Executive_Report.md`.
+    - Use the 'write_file' tool to save the report to `Executive_Report.md`.
     - Upload the report to Google Drive using the `upload_report` tool. 
-5. Generate the Purchase Order in Markdown format.
+6. Generate the Purchase Order in Markdown format.
     - Use information from the Executive Report generated in Step 4.
     - Generate the purchase order in Markdown format, with placeholders for information that is not available.
     - Use the 'write_file' tool to save the purchase order to `Purchase_Order.md`.
@@ -88,6 +92,7 @@ def run_agent(number_of_gpus: int) -> None:
                     filesystem.append_to_log,
                     filesystem.list_files,
                     contract.analyze_contract_clause,
+                    contract.analyze_warehouse_policy,
                     google_drive.upload_file
                 ],
                 tool_config=types.ToolConfig(function_calling_config=types.FunctionCallingConfig(mode=types.FunctionCallingConfigMode.VALIDATED)),
@@ -118,6 +123,7 @@ def run_agent(number_of_gpus: int) -> None:
                 case 'append_to_log': result = filesystem.append_to_log(args['filename'], args['content'])
                 case 'list_files': result = filesystem.list_files()
                 case 'analyze_contract_clause': result = contract.analyze_contract_clause(args['doc_name'], args['clause_type'])
+                case 'analyze_warehouse_policy': result = contract.analyze_warehouse_policy(args['doc_name'])
                 case 'upload_file': result = google_drive.upload_file(args['filename'], args['content'], args['metadata'])
                 case _: raise ValueError(f"Unrecognized function_call.name: {fc_part.function_call.name}")
             function_responses.append(types.Part.from_function_response(name=fc_part.function_call.name, response={'result': result}))

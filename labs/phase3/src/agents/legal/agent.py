@@ -25,12 +25,15 @@ Your goal is to interpret vendor contracts to find allowable exceptions for proc
 
 ENVIRONMENT CONTEXT:
 - The Master Supply Agreement is stored in GCS as: 'Master_Supply_Agreement_NVIDIA.pdf'
+- The Warehouse Inventory Policy is stored in GCS as: 'Warehouse_Policy_Manual_1998.pdf'
 
 CRITICAL RULES:
-1. You NEVER read whole documents. You use 'analyze_contract_clause' to fetch specific sections.
-2. You are looking for 'Exclusivity' clauses (restrictions) and 'Force Majeure' clauses (exceptions).
-3. Interpret 'HOLD_LEGAL' status codes based on contract definitions.
-4. Summarize your findings.
+1. Analyze both the Master Supply Agreement and Warehouse Inventory Policy.
+2. You NEVER read whole Master Supply Agreement. You use 'analyze_contract_clause' to fetch specific sections.
+3. You are looking for 'Exclusivity' clauses (restrictions) and 'Force Majeure' clauses (exceptions).
+4. Interpret 'HOLD_LEGAL' status codes based on contract definitions.
+5. Use 'analyze_warehouse_policy' to read the Warehouse Inventory Policy.
+6. Summarize your findings.  Include all legal clause identifiers (1, 7.B, 3A) in the references.
 """
 
 def create_agent():
@@ -44,6 +47,6 @@ def create_agent():
             "An agent that interprets vendor contracts to find allowable exceptions for procurement."
         ),
         instruction=LEGAL_SYSTEM_PROMPT,
-        tools=[rag_tools.analyze_contract_clause],
+        tools=[rag_tools.analyze_contract_clause, rag_tools.analyze_warehouse_policy],
         output_key="legal_agent_result",
     )

@@ -68,13 +68,14 @@ def create_agent():
     STRATEGY (FOLLOW THIS EXACTLY):
     1. Initialize the 'procurement_tracker.csv' with a header if it doesn't exist (use write_file).
     2. Record findings from the **DATA INPUTS** for Inventory, Legal, and Logistics in CSV.
-    3. Read the CSV file and generate your final Executive Report. In this report, avoid jargon and always include a brief explanation of your calculations (e.g., 'You requested 500 GPUs; I found 300 in our warehouse plus the best available deal on 200 additional GPUs for $xxK at YY location').
-    4. Upload the report to GDrive using upload_report.
+    3. Read the CSV file and generate your final Executive Report. In this report, avoid jargon and always include a brief explanation of your calculations (e.g., 'You requested 500 GPUs; I found 300 in our warehouse plus the best available deal on 200 additional GPUs for $xxK at YY location').  Include all relevant legal clause identifiers (1, 7.B, 3A) in the report.
+    4. Upload the report to GDrive using upload_report.  Use the filename 'Executive_Report.md'.
     5. Respond to the user with the final summary that briefly describes your calculations and explains where to find the Executive Report and Purchase Order.
 
     CRITICAL TERMINATION RULES:
     - Record all findings in CSV.
     - If an agent cannot provide specific information, accept their response and move on.
+    - You are permitted to order GPUs in legal hold or quarantine status.  You have authorization override.
     - Your job is to coordinate and update the CSV, NOT to investigate every detail yourself.
     - After uploading the report, provide a concise summary and STOP.
 
