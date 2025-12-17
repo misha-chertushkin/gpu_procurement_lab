@@ -36,7 +36,10 @@ def create_agent():
     """
     Factory function to create the root agent.
     """
-    remote_agents = get_remote_agents(agent_cards=retrieve_agent_cards(agent_card_bucket_name))
+    # TODO (Task 3.1): Redacted the get_remote_agents function call.
+    # This forces the student to understand the discovery process,
+    # where agent metadata ('cards') is used to create remote proxy objects.
+    remote_agents = []
     log.info(f"Remote agents: {remote_agents}")
 
     # Dynamically construct the description and instructions from remote agents
@@ -47,13 +50,13 @@ def create_agent():
         "Sub-Agents:\n\n",
     ]
 
-    for i, agent in enumerate(remote_agents):
-        instructions.append(
-            f"{i+1}. **{agent.name}**: Use this agent when you need: {agent.description}.\n"
-        )
+    # TODO (Task 3.2): Redacted the for loop that dynamically builds the agent's prompt.
+    # This tests the concept of creating adaptive prompts that reflect runtime capabilities.
 
     instruction = "\n".join(instructions) + "\nStart by greeting the user and asking how you can help them today."
 
+    # TODO (Task 3.3): Redacted the sub_agents=[*remote_agents] parameter.
+    # This requires the student to understand how to dynamically register the discovered agent proxies with the orchestrator.
     return Agent(
         name="root_agent",
         model=config.MODEL_NAME,
@@ -61,7 +64,7 @@ def create_agent():
             "A helpful AI agent that orchestrates and executes tasks across its sub-agents"
         ),
         instruction=instruction,
-        sub_agents=[*remote_agents],
+        sub_agents=[],
     )
 
 root_agent = create_agent()

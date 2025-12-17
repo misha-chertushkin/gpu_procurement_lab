@@ -18,38 +18,34 @@ Respond with a brief summary of your research steps and calculation. Explain eve
 </response_format>
 
 <instructions>
+# TODO (Task 1.1): Redact the explicit tool names from the instructions to challenge the student to identify the correct tools.
 1. Start by finding the quantity of GPUs available in stock using our database `{config.PROJECT_ID}.{config.DATASET_ID}`. 
-    - This is a legacy database with messy names of tables and columns. Use the `explore_schema` tool to learn about the structure of tables `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_CATALOG}` and `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_INVENTORY}`.
+    - This is a legacy database with messy names of tables and columns. Use the appropriate tool to learn about the structure of tables `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_CATALOG}` and `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_INVENTORY}`.
     - Use your best judgement to figure out the role of each table and column, and find an optimal way to join these tables.
-    - Write a SQL query for loading the requested inventory data including the status and use the `run_query` tool to execute your query.
+    - Write a SQL query for loading the requested inventory data including the status and use the appropriate tool to execute your query.
     - Capture the status of GPUs that you found (some of them can be in Quarantine in which case you will have to confirm their availability in the legal contract).
 2. Analyze the Master Supply Agreement to confirm that the GPUs available in stock can be used.
     - The Master Supply Agreement is stored in GCS as: 'Master_Supply_Agreement_NVIDIA.pdf'
-    - You must use the tool `analyze_contract_clause` to extract relevant information from this document.
+    - You must use the appropriate tool to extract relevant information from this document.
     - Start by analyzing the 'Exclusivity' clauses (restrictions) and 'Force Majeure' clauses (exceptions) in parallel.
 3. Analyze the Warehouse Policy Manual to confirm interpretation of inventory data.
     - The Warehouse Policy Manual is stored in GCS as: 'Warehouse_Policy_Manual_1998.pdf'
-    - You must use the tool `analyze_warehouse_policy` to extract relevant information from this document.
+    - You must use the appropriate tool to extract relevant information from this document.
     - Start by analyzing inventory codes and descriptions.
 4. Obtain the latest spot price for any remaining GPUs that should be purchased on the marketplace, including shipping estimates.
-    - Use the tool `fetch_spot_prices` to find the market price per GPU.
-    - Use the tool `estimate_shipping` to quote the shipping cost.
+    - Use the appropriate tool to find the market price per GPU.
+    - Use the appropriate tool to quote the shipping cost.
 5. Generate the Executive Report. 
     - Write a brief explanation of your finding and calculations.  Include all legal clause identifiers (1, 7.B, 3A) in the references.
-    - The structure of the Executive Report must follow this example:
-        ```
-        # Executive Report
-        1. You requested [number_of_GPUs] H100 GPUs; 
-        2. I found [number_of_available_GPUs_in_stock] in our warehouse that are available based on [brief analysis of Master Supply Agreement]
-        3. The remaining [number_of_GPUs_] GPUs can be ordered on the marketplace from [vendor name] for $[total amount]K total including shipping.
-        ```
-    - Use the 'write_file' tool to save the report to `Executive_Report.md`.
-    - Upload the report to Google Drive using the `upload_report` tool. 
+        # TODO (Task 1.2): The structure of the Executive Report has been redacted. 
+        # The student should analyze the requirements and generate a suitable report.
+    - Use the appropriate tool to save the report to `Executive_Report.md`.
+    - Upload the report to Google Drive using the appropriate tool. 
 6. Generate the Purchase Order in Markdown format.
     - Use information from the Executive Report generated in Step 4.
     - Generate the purchase order in Markdown format, with placeholders for information that is not available.
-    - Use the 'write_file' tool to save the purchase order to `Purchase_Order.md`.
-    - Upload purchase to Google Drive using the `upload_report` tool. 
+    - Use the appropriate tool to save the purchase order to `Purchase_Order.md`.
+    - Upload purchase to Google Drive using the appropriate tool. 
     - The purchase order must have the following structure:
         ```
         *   **PO Number:** Create a unique identifier (e.g., PO-GPU-20251203-001).
@@ -82,19 +78,9 @@ def run_agent(number_of_gpus: int) -> None:
             contents=prompt,
             config=types.GenerateContentConfig(
                 system_instruction='',
-                tools=[
-                    logistics.fetch_spot_prices,
-                    logistics.estimate_shipping,
-                    database.explore_schema,
-                    database.run_query,
-                    filesystem.read_file,
-                    filesystem.write_file,
-                    filesystem.append_to_log,
-                    filesystem.list_files,
-                    contract.analyze_contract_clause,
-                    contract.analyze_warehouse_policy,
-                    google_drive.upload_file
-                ],
+                # TODO (Task 1.3): Redacted the list of tools.
+                # The student should inspect the imported tool classes and assemble the complete list of tool functions to provide to the model.
+                tools=[],
                 tool_config=types.ToolConfig(function_calling_config=types.FunctionCallingConfig(mode=types.FunctionCallingConfigMode.VALIDATED)),
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True)
             )
@@ -113,20 +99,13 @@ def run_agent(number_of_gpus: int) -> None:
         for fc_part in fc_parts:
             args = fc_part.function_call.args
             function_calls.append({fc_part.function_call.name: str(args)})
-            match fc_part.function_call.name:
-                case 'fetch_spot_prices': result = logistics.fetch_spot_prices(args['chip_type'])
-                case 'estimate_shipping': result = logistics.estimate_shipping(args['origin'], args['destination'])
-                case 'explore_schema': result = database.explore_schema(args['table_name'])
-                case 'run_query': result = database.run_query(args['sql_query'])
-                case 'read_file': result = filesystem.read_file(args['filename'])
-                case 'write_file': result = filesystem.write_file(args['filename'], args['content'])
-                case 'append_to_log': result = filesystem.append_to_log(args['filename'], args['content'])
-                case 'list_files': result = filesystem.list_files()
-                case 'analyze_contract_clause': result = contract.analyze_contract_clause(args['doc_name'], args['clause_type'])
-                case 'analyze_warehouse_policy': result = contract.analyze_warehouse_policy(args['doc_name'])
-                case 'upload_file': result = google_drive.upload_file(args['filename'], args['content'], args['metadata'])
-                case _: raise ValueError(f"Unrecognized function_call.name: {fc_part.function_call.name}")
-            function_responses.append(types.Part.from_function_response(name=fc_part.function_call.name, response={'result': result}))
+            # TODO (Task 1.4): Redacted the match/case block.
+            # This is a core concept of how tool-using agents execute tasks.
+            # The student should implement the logic to dispatch the model's function calls to the correct Python tool functions.
+            result = ""
+            # TODO (Task 1.5): Redacted the line that wraps the tool's output.
+            # This tests the student's knowledge of the specific library syntax for returning tool results to the model.
+            function_responses.append("PLACEHOLDER")
         prompt.append(types.Content(role="tool", parts=function_responses))
         trajectory.append({f'Inference #{len(trajectory)+1}': function_calls[0] if len(function_calls)==1 else function_calls})
 

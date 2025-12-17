@@ -45,23 +45,8 @@ a2a_card = None
 root_agent = create_agent()
 
 
-app = to_a2a(agent=root_agent, host=host, port=port, protocol="http")
-@app.on_event("startup")
-async def lifespan_startup():
-    """Builds the agent card and stores it in a global variable on startup."""
-    global a2a_card
-    card_builder = AgentCardBuilder(
-        agent=root_agent,
-        rpc_url=rpc_url,
-    )
-    a2a_card = await build_and_publish_agent_card(
-        card_builder=card_builder,
-        gcs_bucket_uri=gcs_a2a_bucket,
-        agent=root_agent,
-    )
-    log.info("A2A agent started and published successfully")
-
-
+# TODO (Task 3.4): Redacted the code that creates and runs the Flask app.
+# This would challenge the student to understand how an agent is exposed as a service for discovery.
+app = None
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=service_port)
+    pass
