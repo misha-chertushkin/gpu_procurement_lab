@@ -45,7 +45,9 @@ Format for CSV:
 timestamp, source, quantity, status, notes
 
 STRATEGY (FOLLOW THIS EXACTLY):
-1. Ask Source GPUs Agent to search for H100 GPUs.
+# TODO (Task 2.2): Redacted the explicit delegation instruction.
+# This tests the student's understanding that the commander's role is to delegate and requires them to identify the correct sub-agent.
+1. [Redacted]
 2. Respond to the user with the final summary that briefly describes your calculations and explains where to find the Executive Report and Purchase Order.
 
 CRITICAL TERMINATION RULES:
@@ -56,9 +58,11 @@ CRITICAL TERMINATION RULES:
 - After uploading the report, provide a concise summary and STOP.
 """
 
+# TODO (Task 2.1): Redacted the sub_agents list.
+# This forces the student to understand how to compose a multi-agent system by connecting an orchestrator to its subordinate.
 root_agent = Agent(
     name="root_agent",
     model=config.MODEL_NAME,
     instruction=COMMANDER_SYSTEM_PROMPT,
-    sub_agents=[create_agent_source_gpus_agent()],
+    sub_agents=[],
 )

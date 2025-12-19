@@ -41,13 +41,9 @@ def create_agent():
     legal_agent = create_legal_agent()
     logistics_agent = create_logistics_agent()
 
-    source_gpus_parallel_agent = ParallelAgent(
-        name="source_gpus_parallel_agent",
-        description=(
-            "Runs multiple source GPU sub-agents in parallel."
-        ),
-        sub_agents=[inventory_agent, legal_agent, logistics_agent],
-    )
+    # TODO (Task 2.3): Redacted the definition of the ParallelAgent.
+    # This requires the student to implement a parallel execution pattern, a key concept for efficient agentic workflows.
+    source_gpus_parallel_agent = None
 
     source_gpus_merge_agent = Agent(
         name="source_gpus_sum_and_report_agent",
@@ -79,16 +75,8 @@ def create_agent():
     - Your job is to coordinate and update the CSV, NOT to investigate every detail yourself.
     - After uploading the report, provide a concise summary and STOP.
 
-    DATA INPUTS:
-
-        *   **Inventory Agent Results:**
-            {inventory_agent_result}
-
-        *   **Legal Agent Results:**
-            {legal_agent_result}
-
-        *   **Logistics Agent Results:**
-            {logistics_agent_result}
+    # TODO (Task 2.5): Redacted the DATA INPUTS section.
+    # This is critical for teaching how data is passed between agents in a sequence.
     """,
         tools=[
             fs_tools.read_file,
@@ -99,10 +87,7 @@ def create_agent():
         ]
     )
 
-    return SequentialAgent(
-        name="source_gpus_agent",
-        description=(
-            "Runs multiple source GPU sub-agents in sequence."
-        ),
-        sub_agents=[source_gpus_parallel_agent, source_gpus_merge_agent],
-    )
+    # TODO (Task 2.4): Redacted the SequentialAgent definition.
+    # This tests the student's ability to chain agents together to create a multi-step workflow,
+    # first running the parallel agents and then the merge agent.
+    return None

@@ -223,3 +223,6 @@ api_logs.txt
 workspace
 gdrive_sync
 logs
+
+.python-version
+.devcontainer
