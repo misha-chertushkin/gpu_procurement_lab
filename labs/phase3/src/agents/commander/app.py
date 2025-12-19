@@ -45,7 +45,7 @@ a2a_card = None
 root_agent = create_agent()
 
 
-# TODO (Task 3.4): Redacted the code that creates and runs the Flask app.
+# TODO (Task 3.1): Redacted the code that creates and runs the Flask app.
 # This would challenge the student to understand how an agent is exposed as a service for discovery.
 app = None
 if __name__ == "__main__":

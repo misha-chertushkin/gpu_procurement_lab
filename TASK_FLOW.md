@@ -62,21 +62,21 @@ In this phase, you'll refactor the monolithic agent into a hierarchical, multi-a
 
 In this final phase, you'll enable dynamic agent discovery and communication using the Agent-to-Agent (A2A) protocol.
 
-### 📌 Task 3.1: Discover Remote Agents
+### 📌 Task 3.1: Expose an Agent as a Service
+*   **File:** `labs/phase3/src/agents/commander/app.py`
+*   **Your Mission:** The code that creates and runs the Flask app for the commander agent has been removed. Implement the necessary code to expose the agent as a web service, making it discoverable by other agents.
+
+### 📌 Task 3.2: Discover Remote Agents
 *   **File:** `labs/phase3/src/agents/a2a_root/agent.py`
 *   **Your Mission:** The call to the `get_remote_agents` function has been replaced with an empty list. Implement the logic to retrieve agent "cards" from GCS and use them to create remote agent proxy objects.
 
-### 📌 Task 3.2: Dynamically Build the Prompt
+### 📌 Task 3.3: Dynamically Build the Prompt
 *   **File:** `labs/phase3/src/agents/a2a_root/agent.py`
 *   **Your Mission:** The `for` loop that dynamically builds the agent's prompt from the discovered agents has been removed. Implement this loop to create an adaptive prompt that reflects the agent's runtime capabilities.
 
-### 📌 Task 3.3: Register Discovered Agents
+### 📌 Task 3.4: Register Discovered Agents
 *   **File:** `labs/phase3/src/agents/a2a_root/agent.py`
 *   **Your Mission:** The `sub_agents` parameter in the `root_agent`'s definition is empty. Dynamically register the discovered remote agent proxies with the `root_agent` to make them available for orchestration.
-
-### 📌 Task 3.4: Expose an Agent as a Service
-*   **File:** `labs/phase3/src/agents/commander/app.py`
-*   **Your Mission:** The code that creates and runs the Flask app for the commander agent has been removed. Implement the necessary code to expose the agent as a web service, making it discoverable by other agents.
 
 ### 📌 Task 3.5: Implement Dynamic Delegation
 *   **File:** `labs/phase3/src/agents/commander/agent.py`
@@ -103,8 +103,8 @@ This section provides hints for each task.
 *   **Task 2.5:** The student needs to add the `DATA INPUTS` section back to the prompt, using the correct placeholders: `{inventory_agent_result}`, `{legal_agent_result}`, and `{logistics_agent_result}`.
 
 ### Phase 3 Hints
-*   **Task 3.1:** The student should call `retrieve_agent_cards()` with the `agent_card_bucket_name` and then pass the result to `get_remote_agents()`.
-*   **Task 3.2:** The student needs to write a `for` loop that iterates over the `remote_agents` list and appends a formatted string containing the agent's name and description to the `instructions` list.
-*   **Task 3.3:** The student should pass `sub_agents=[*remote_agents]` to the `Agent` constructor.
-*   **Task 3.4:** The student needs to use the `to_a2a` function to create the app and then use `uvicorn` to run it, similar to the other agent `app.py` files in the project. They will also need to implement the `startup` event to publish the agent card.
+*   **Task 3.1:** The student needs to use the `to_a2a` function to create the app and then use `uvicorn` to run it, similar to the other agent `app.py` files in the project. They will also need to implement the `startup` event to publish the agent card.
+*   **Task 3.2:** The student should call `retrieve_agent_cards()` with the `agent_card_bucket_name` and then pass the result to `get_remote_agents()`.
+*   **Task 3.3:** The student needs to write a `for` loop that iterates over the `remote_agents` list and appends a formatted string containing the agent's name and description to the `instructions` list.
+*   **Task 3.4:** The student should pass `sub_agents=[*remote_agents]` to the `Agent` constructor.
 *   **Task 3.5:** The student should remove the specific instruction "Ask Source GPUs Agent..." and replace it with a more general instruction to delegate to sub-agents based on their descriptions. This demonstrates the power of dynamic discovery.
