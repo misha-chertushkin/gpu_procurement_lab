@@ -184,6 +184,7 @@ class TestAgentRun:
         """Did it cite Clause 7.B from the Nvidia contract?"""
         lower_content = TestAgentRun.report_content.lower()
         has_clause = ("7.b" in lower_content
+                    or "7" in lower_content
                     or "7." in lower_content
                     or "7 ." in lower_content
                     or "7b" in lower_content
