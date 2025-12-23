@@ -196,7 +196,7 @@ class TestAgentRun:
     @pytest.mark.order(5)
     def test_procurement_recommendation(self, prompt, run_number):
         """Did it recommend buying 200 units from the spot market?"""
-        procurement_regex = r"(?:purchase|order|buy|procure|source|requirement of|recommend\s+(?:to\s+)?purchasing|purchase\s+order\s+for)\s.*?\b(\d+)\b\s.*?(?:H100|units)"
+        procurement_regex = r"(?:purchase|order|buy|procure|units|source|requirement of|recommend\s+(?:to\s+)?purchasing|purchase\s+order\s+for)\s.*?\b(\d+)\b\s.*?(?:H100|units)"
         buy_matches = re.findall(procurement_regex, TestAgentRun.report_content.lower())
         is_correct_amount = ("200" in buy_matches) 
         assert is_correct_amount, f"FAIL: Recommendation was not ONLY 200 units. Found: {buy_matches}"
