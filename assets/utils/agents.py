@@ -12,21 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import logging
 import json
-import tempfile
 from dotenv import load_dotenv
-from google.cloud import storage
 from google.cloud.storage import Client
-from google.adk.agents.remote_a2a_agent import AGENT_CARD_WELL_KNOWN_PATH
-from google.adk.agents.remote_a2a_agent import RemoteA2aAgent
-from google.adk.a2a.utils.agent_card_builder import AgentCardBuilder
 from a2a.client.transports.jsonrpc import JsonRpcTransport
 from a2a.types import AgentCard
 import aiohttp
 from typing import List, Dict, Any
-from httpx import AsyncClient
 import google.auth
 import google.auth.transport.requests
 import google.oauth2.id_token
@@ -133,74 +126,3 @@ def retrieve_agent_cards(agent_card_bucket_name: str) -> List[AgentCard]:
     except Exception as e:
         log.error(f"Encountered an error when attempting to retrieve agent card from gs://{agent_card_bucket_name}: {e}")
         raise e
-
-def get_remote_agents(agent_cards: List[AgentCard]) -> List[RemoteA2aAgent]:
-    """
-    Creates a RemoteA2aAgent for each agent card, ensuring each agent
-    has its own httpx.AsyncClient with correct auth headers.
-    """
-    global _async_clients
-    remote_agents = []
-
-    for card in agent_cards:
-        no_port_url = ':'.join(card.url.split(':')[:-1]) # remove the port
-        url = no_port_url + AGENT_CARD_WELL_KNOWN_PATH
-        log.info(f"URL for Agent Card: {url}")
-
-        headers = {
-            "Authorization": f"Bearer {get_id_token(url)}",
-            "x-goog-user-project": config.PROJECT_ID,
-        }
-
-        httpx_client = AsyncClient(headers=headers)
-        remote_agent = RemoteA2aAgent(
-            name=card.name,
-            description=card.description,
-            agent_card=card,
-            httpx_client=httpx_client
-        )
-
-        remote_agents.append(remote_agent)
-
-    return remote_agents
-
-async def build_and_publish_agent_card(
-    card_builder: AgentCardBuilder,
-    gcs_bucket_uri: str,
-    agent,
-):
-    """Builds the agent card and optionally publishes it to GCS."""
-    try:
-        a2a_card = await card_builder.build()
-        log.info(f"Created a2a_card: {a2a_card}")
-
-        # Publish Agent Card for Discovery if GCS Bucket is set
-        if gcs_bucket_uri and gcs_bucket_uri != "unset":
-            try:
-                storage_client = storage.Client()
-                bucket_name = gcs_bucket_uri.replace("gs://", "")
-                bucket = storage_client.bucket(bucket_name)
-
-                # Create and publish temporary JSON card
-                with tempfile.NamedTemporaryFile(
-                    mode="w+", delete=False, suffix=".json"
-                ) as temp_file:
-                    json.dump(a2a_card.model_dump(), temp_file, indent=2)
-                    temp_file.flush()  # Ensure all data is written to the file
-
-                    blob_name = f"{agent.name}.json"
-                    blob = bucket.blob(blob_name)
-
-                    log.info(
-                        f"Uploading agent card to gs://{bucket_name}/{blob_name}"
-                    )
-                    blob.upload_from_filename(temp_file.name)
-                    log.info("Successfully uploaded agent card to GCS.")
-
-                os.remove(temp_file.name)  # Clean up the temporary file
-            except Exception as e:
-                log.error(f"Failed to upload agent card to GCS: {e}")
-        return a2a_card
-    except Exception as e:
-        log.error(f"Failed to build agent card: {e}")
-        return None
