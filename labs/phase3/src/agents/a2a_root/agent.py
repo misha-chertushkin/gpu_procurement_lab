@@ -17,7 +17,7 @@ import logging
 from dotenv import load_dotenv
 from google.adk.agents import Agent
 
-from assets.utils.agents import get_remote_agents, retrieve_agent_cards
+from assets.utils.agents import retrieve_agent_cards
 from assets.config import config
 
 
@@ -36,7 +36,12 @@ def create_agent():
     """
     Factory function to create the root agent.
     """
-    remote_agents = get_remote_agents(agent_cards=retrieve_agent_cards(agent_card_bucket_name))
+    agent_cards = retrieve_agent_cards(agent_card_bucket_name)
+
+    # TODO: Convert the remotely retrieved Agent Cards in agent_cards to Remote A2A Sub-agents.
+    #
+    # See https://google.github.io/adk-docs/a2a/quickstart-consuming/ for help.
+    remote_agents = []
     log.info(f"Remote agents: {remote_agents}")
 
     # Dynamically construct the description and instructions from remote agents

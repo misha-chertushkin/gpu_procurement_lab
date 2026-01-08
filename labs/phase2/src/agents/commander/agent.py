@@ -17,7 +17,6 @@ import os
 from google import genai
 from dotenv import load_dotenv
 
-from agents.source_gpus.agent import create_agent as create_agent_source_gpus_agent
 from assets.config import config
 
 load_dotenv()
@@ -49,16 +48,21 @@ STRATEGY (FOLLOW THIS EXACTLY):
 2. Respond to the user with the final summary that briefly describes your calculations and explains where to find the Executive Report and Purchase Order.
 
 CRITICAL TERMINATION RULES:
-- Once you have data from the Source GPUs Agent, then you MUST move to step 3.
 - Do NOT keep asking follow-up questions indefinitely.
 - If an agent cannot provide specific information, accept their response and move on.
 - Your job is to coordinate and report, NOT to investigate every detail yourself.
 - After uploading the report, provide a concise summary and STOP.
 """
 
+# TODO: Implement a multi-agent solution that parallelizes isolated steps from phase 1.
+# DO NOT CHANGE THE NAME OF THE AGENT BELOW.  It will be used in the headless and live
+# tests.  Add the relevant components to the root_agent to complete the implemntation.
+#
+# See https://google.github.io/adk-docs/agents/workflow-agents/parallel-agents/#full-example-parallel-web-research for help.
+
 root_agent = Agent(
     name="root_agent",
     model=config.MODEL_NAME,
     instruction=COMMANDER_SYSTEM_PROMPT,
-    sub_agents=[create_agent_source_gpus_agent()],
+    sub_agents=[]
 )

@@ -20,7 +20,6 @@ from google.adk.a2a.utils.agent_to_a2a import to_a2a
 from google.adk.a2a.utils.agent_card_builder import AgentCardBuilder
 
 from .agent import create_agent
-from assets.utils.agents import build_and_publish_agent_card
 
 
 load_dotenv()
@@ -50,15 +49,12 @@ app = to_a2a(agent=root_agent, host=host, port=port, protocol="http")
 async def lifespan_startup():
     """Builds the agent card and stores it in a global variable on startup."""
     global a2a_card
-    card_builder = AgentCardBuilder(
-        agent=root_agent,
-        rpc_url=rpc_url,
-    )
-    a2a_card = await build_and_publish_agent_card(
-        card_builder=card_builder,
-        gcs_bucket_uri=gcs_a2a_bucket,
-        agent=root_agent,
-    )
+    
+    # TODO: Create the Agent Card in variable a2a_card and Publish it to the GCS bucket referenced by 
+    # variable gcs_a2a_bucket.
+    #
+    # See https://google.github.io/adk-docs/a2a/quickstart-exposing/#exposing-the-remote-agent-with-the-to_a2aroot_agent-function for help.
+
     log.info("A2A agent started and published successfully")
 
 

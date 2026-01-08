@@ -49,7 +49,6 @@ STRATEGY (FOLLOW THIS EXACTLY):
 2. Respond to the user with the final summary that briefly describes your calculations and explains where to find the Executive Report and Purchase Order.
 
 CRITICAL TERMINATION RULES:
-- Once you have data from the Source GPUs Agent, then you MUST move to step 3.
 - Do NOT keep asking follow-up questions indefinitely.
 - If an agent cannot provide specific information, accept their response and move on.
 - Your job is to coordinate and report, NOT to investigate every detail yourself.
