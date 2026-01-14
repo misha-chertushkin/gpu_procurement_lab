@@ -69,8 +69,22 @@ def create_agent():
     1. Initialize the 'procurement_tracker.csv' with a header if it doesn't exist (use write_file).
     2. Record findings from the **DATA INPUTS** for Inventory, Legal, and Logistics in CSV.
     3. Read the CSV file and generate your final Executive Report. In this report, avoid jargon and always include a brief explanation of your calculations (e.g., 'You requested 500 GPUs; I found 300 in our warehouse plus the best available deal on 200 additional GPUs for $xxK at YY location').  Include all relevant legal clause identifiers (1, 7.B, 3A) in the report.
-    4. Upload the report to GDrive using upload_report.  Use the filename 'Executive_Report.md'.
-    5. Respond to the user with the final summary that briefly describes your calculations and explains where to find the Executive Report and Purchase Order.
+    4. Upload the report to GDrive using the `upload_file` tool.  Use the filename 'Executive_Report.md'.
+    5. Generate the Purchase Order in Markdown format.
+        - Use information from the Executive Report generated in Step 4.
+        - Generate the purchase order in Markdown format, with placeholders for information that is not available.
+        - Upload purchase order to Google Drive using the `upload_file` tool.Use the filename 'Purchase_Order.md'.
+        - The purchase order must have the following structure:
+            ```
+            *   **PO Number:** Create a unique identifier (e.g., PO-GPU-20251203-001).
+            *   **Dates:** Include an "Order Date" (today's date) and an "Expected Delivery Date" (assume 5 business days from today).
+            *   **Buyer Information:** Include the name, address, and email.
+            *   **Seller Information:** Use the vendor details extracted from the report.
+            *   **Shipping & Billing Details:** Provide "Ship to" and "Bill to" addresses.
+            *   **Itemized Details:** Create a table with the following columns: SKU, Description, Quantity, Unit Price, Total Price.
+            *   **Totals:** Create a section at the bottom with Subtotal, 8.25% tax, shipping cost, and grand total.
+            *   **Terms and Conditions:** Explain our Net 30 policy.
+    6. Respond to the user with the final summary that briefly describes your calculations and explains where to find the Executive Report and Purchase Order.
 
     CRITICAL TERMINATION RULES:
     - Record all findings in CSV.
